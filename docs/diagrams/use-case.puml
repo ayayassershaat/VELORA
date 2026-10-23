@@ -1,0 +1,216 @@
+@startuml
+left to right direction
+
+' ========================================================
+' STYLING & APPEARANCE CONFIGURATION
+' ========================================================
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam monochrome false
+skinparam handwritten false
+skinparam roundcorner 10
+skinparam actorStyle awesome
+
+skinparam actor {
+    BackgroundColor #F8F9FA
+    BorderColor #2D3748
+    FontName Arial
+    FontSize 13
+}
+
+skinparam usecase {
+    BackgroundColor #FFFFFF
+    BorderColor #4A5568
+    ArrowColor #2B6CB0
+    FontName Arial
+    FontSize 12
+}
+
+skinparam rectangle {
+    BackgroundColor #F7FAFC
+    BorderColor #CBD5E0
+    FontName Arial
+    FontSize 13
+    FontStyle bold
+}
+
+' ========================================================
+' ACTORS DEFINITION & GENERALIZATION HIERARCHY
+' ========================================================
+actor "Authenticated User\n(المستخدم العام)" as User <<Abstract>>
+actor "Center Manager\n(مدير المركز)" as Manager
+actor "Sales Specialist\n(مسؤول المبيعات)" as Sales
+actor "Course Instructor\n(المدرب / المحاضر)" as Instructor
+actor "Enrolled Student\n(المتدرب / الطالب)" as Student
+
+' Actor Generalization (Inheritance)
+Manager -up-|> User
+Sales -up-|> User
+Instructor -up-|> User
+Student -up-|> User
+
+' ========================================================
+' SYSTEM BOUNDARY: VELORA PLATFORM (MVP)
+' ========================================================
+rectangle "VELORA Training Center Management Platform (MVP)" {
+
+    ' ----------------------------------------------------
+    ' Package 1: Identity & Self-Service
+    ' ----------------------------------------------------
+    rectangle "1. Identity & Self-Service (إدارة الهوية والخدمات الذاتية)" as PkgAuth {
+        usecase "Sign In to Center Portal\n(UC-AUTH-01)" as UC_SignIn
+        usecase "Validate Tenant & Credentials\n(UC-AUTH-01a)" as UC_ValidateCreds
+        usecase "Manage Personal Profile\n(UC-AUTH-02)" as UC_ManageProfile
+        usecase "Sign Out\n(UC-AUTH-03)" as UC_SignOut
+        usecase "Manage Staff User Accounts\n(UC-USER-01)" as UC_ManageStaff
+        usecase "Register Student Profile\n(UC-STU-01)" as UC_RegisterStudent
+    }
+
+    ' ----------------------------------------------------
+    ' Package 2: Course & Cohort Administration
+    ' ----------------------------------------------------
+    rectangle "2. Course & Cohort Administration (إدارة الدورات الأكاديمية)" as PkgCourse {
+        usecase "Create Course Cohort\n(UC-CRS-01)" as UC_CreateCourse
+        usecase "Manage Course Details & Status\n(UC-CRS-02)" as UC_ManageCourse
+        usecase "Assign Instructor & Terms\n(UC-CRS-03)" as UC_AssignInstructor
+        usecase "Schedule Lecture Session\n(UC-CRS-04)" as UC_ScheduleSession
+        usecase "Archive Course Cohort\n(UC-CRS-05)" as UC_ArchiveCourse
+    }
+
+    ' ----------------------------------------------------
+    ' Package 3: Student Enrollment & Capacity
+    ' ----------------------------------------------------
+    rectangle "3. Student Enrollment & Waitlist (التسجيل والسعة والانتظار)" as PkgEnroll {
+        usecase "Enroll Student in Course\n(UC-ENR-01)" as UC_EnrollStudent
+        usecase "Verify State & Seat Capacity\n(UC-ENR-01a)" as UC_VerifyCapacity
+        usecase "Apply Enrollment Discount\n(UC-ENR-01b)" as UC_ApplyDiscount
+        usecase "Queue on Course Waitlist\n(UC-ENR-01c)" as UC_QueueWaitlist
+        usecase "Manage Waitlist & Promotions\n(UC-WTL-01)" as UC_ManageWaitlist
+        usecase "Withdraw Student Enrollment\n(UC-ENR-02)" as UC_WithdrawEnrollment
+    }
+
+    ' ----------------------------------------------------
+    ' Package 4: Academic Delivery, Tasks & Attendance
+    ' ----------------------------------------------------
+    rectangle "4. Academic Delivery & Accountability (التدريس والمتابعة الأكاديمية)" as PkgAcademic {
+        usecase "Upload Course Material\n(UC-MAT-01)" as UC_UploadMaterial
+        usecase "Download Course Material\n(UC-MAT-02)" as UC_DownloadMaterial
+        usecase "Publish Homework Task\n(UC-TSK-01)" as UC_PublishTask
+        usecase "Submit Task Deliverable\n(UC-TSK-02)" as UC_SubmitTask
+        usecase "Allow Late Submission Override\n(UC-TSK-02a)" as UC_LateOverride
+        usecase "Replace Task Submission File\n(UC-TSK-02b)" as UC_ReplaceSubmission
+        usecase "Review Student Submissions\n(UC-TSK-03)" as UC_ReviewSubmissions
+        usecase "Record Session Attendance Sheet\n(UC-ATT-01)" as UC_RecordAttendance
+        usecase "View Personal Attendance History\n(UC-ATT-02)" as UC_ViewAttendance
+        usecase "Author 1-to-1 Qualitative Feedback\n(UC-FDB-01)" as UC_AuthorFeedback
+        usecase "View Personal Academic Feedback\n(UC-FDB-02)" as UC_ViewFeedback
+    }
+
+    ' ----------------------------------------------------
+    ' Package 5: Offline Student Finance & Reconciliation
+    ' ----------------------------------------------------
+    rectangle "5. Offline Student Finance (التحصيل المالي وسندات القبض)" as PkgFinance {
+        usecase "Record Offline Payment Voucher\n(UC-PAY-01)" as UC_RecordPayment
+        usecase "Validate Amount & Enrollment\n(UC-PAY-01a)" as UC_ValidatePayment
+        usecase "Detect Overpayment & Create Refund\n(UC-PAY-01b)" as UC_DetectOverpayment
+        usecase "Approve or Reject Payment Voucher\n(UC-PAY-02)" as UC_ApprovePayment
+        usecase "Update Student Balance Atomically\n(UC-PAY-02a)" as UC_UpdateBalance
+        usecase "Execute Excess Refund Payout\n(UC-REF-01)" as UC_ExecuteRefund
+        usecase "Adjust / Reverse Posted Payment\n(UC-PAY-03)" as UC_AdjustPayment
+        usecase "Log Financial Audit Trail\n(UC-PAY-03a)" as UC_LogAudit
+        usecase "View Personal Receipts & Balance\n(UC-PAY-04)" as UC_ViewStudentReceipts
+    }
+
+    ' ----------------------------------------------------
+    ' Package 6: Instructor Settlement & Operational Audit
+    ' ----------------------------------------------------
+    rectangle "6. Instructor Settlement & Governance (مستحقات المدربين والحوكمة)" as PkgGov {
+        usecase "Review Instructor Liabilities\n(UC-INSFIN-01)" as UC_ReviewLiabilities
+        usecase "Disburse Settlement Payout\n(UC-INSFIN-02)" as UC_DisbursePayout
+        usecase "View Personal Accrued Earnings\n(UC-INSFIN-03)" as UC_ViewEarnings
+        usecase "View Role-Tailored Dashboard\n(UC-REP-01)" as UC_ViewDashboard
+        usecase "Inspect Operational Audit Log\n(UC-AUD-01)" as UC_InspectAudit
+    }
+}
+
+' ========================================================
+' RELATIONSHIPS: MANDATORY REUSED BEHAVIOR (<<include>>)
+' ========================================================
+UC_SignIn ..> UC_ValidateCreds : <<include>>
+UC_EnrollStudent ..> UC_VerifyCapacity : <<include>>
+UC_RecordPayment ..> UC_ValidatePayment : <<include>>
+UC_ApprovePayment ..> UC_UpdateBalance : <<include>>
+UC_AdjustPayment ..> UC_LogAudit : <<include>>
+
+' ========================================================
+' RELATIONSHIPS: CONDITIONAL BEHAVIOR (<<extend>>)
+' (Arrows point from Extension Use Case to Base Use Case)
+' ========================================================
+UC_ApplyDiscount ..> UC_EnrollStudent : <<extend>>\n[if discount authorized]
+UC_QueueWaitlist ..> UC_EnrollStudent : <<extend>>\n[if course capacity reached]
+UC_DetectOverpayment ..> UC_RecordPayment : <<extend>>\n[if payment exceeds balance]
+UC_ReplaceSubmission ..> UC_SubmitTask : <<extend>>\n[if before deadline]
+UC_LateOverride ..> UC_SubmitTask : <<extend>>\n[if deadline passed & authorized]
+
+' ========================================================
+' ACTOR ASSOCIATIONS
+' ========================================================
+
+' Authenticated User (Common Inherited Roles)
+User --> UC_SignIn
+User --> UC_ManageProfile
+User --> UC_SignOut
+User --> UC_ViewDashboard
+
+' Center Manager Associations
+Manager --> UC_ManageStaff
+Manager --> UC_RegisterStudent
+Manager --> UC_CreateCourse
+Manager --> UC_ManageCourse
+Manager --> UC_AssignInstructor
+Manager --> UC_ScheduleSession
+Manager --> UC_ArchiveCourse
+Manager --> UC_EnrollStudent
+Manager --> UC_ManageWaitlist
+Manager --> UC_WithdrawEnrollment
+Manager --> UC_UploadMaterial
+Manager --> UC_DownloadMaterial
+Manager --> UC_PublishTask
+Manager --> UC_LateOverride
+Manager --> UC_ReviewSubmissions
+Manager --> UC_RecordAttendance
+Manager --> UC_AuthorFeedback
+Manager --> UC_RecordPayment
+Manager --> UC_ApprovePayment
+Manager --> UC_ExecuteRefund
+Manager --> UC_AdjustPayment
+Manager --> UC_ReviewLiabilities
+Manager --> UC_DisbursePayout
+Manager --> UC_InspectAudit
+
+' Sales Specialist Associations
+Sales --> UC_RegisterStudent
+Sales --> UC_EnrollStudent
+Sales --> UC_ManageWaitlist
+Sales --> UC_RecordPayment
+
+' Course Instructor Associations
+Instructor --> UC_ScheduleSession
+Instructor --> UC_UploadMaterial
+Instructor --> UC_DownloadMaterial
+Instructor --> UC_PublishTask
+Instructor --> UC_LateOverride
+Instructor --> UC_ReviewSubmissions
+Instructor --> UC_RecordAttendance
+Instructor --> UC_AuthorFeedback
+Instructor --> UC_ViewEarnings
+
+' Enrolled Student Associations
+Student --> UC_DownloadMaterial
+Student --> UC_SubmitTask
+Student --> UC_ReplaceSubmission
+Student --> UC_ViewAttendance
+Student --> UC_ViewFeedback
+Student --> UC_ViewStudentReceipts
+
+@enduml

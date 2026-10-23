@@ -1,0 +1,104 @@
+flowchart LR
+    %% ========================================================
+    %% VELORA PLATFORM - CONCEPTUAL DOMAIN MODEL (MVP)
+    %% Domain-Driven Design (DDD) Bounded Contexts & Relationships
+    %% ========================================================
+
+    %% --------------------------------------------------------
+    %% 1. CENTER & IDENTITY MANAGEMENT CONTEXT
+    %% --------------------------------------------------------
+    subgraph IdentityContext ["1. نطاق إدارة المركز والهوية (Center & Identity Context)"]
+        Center["Training Center<br/>(المركز التدريبي / المستأجر)"]
+        User["User Identity<br/>(هوية المستخدم)"]
+        StudentProfile["Student Profile<br/>(الملف التعريفي للمتدرب)"]
+        InstructorProfile["Instructor Profile<br/>(الملف التعريفي للمدرب)"]
+    end
+
+    %% --------------------------------------------------------
+    %% 2. ACADEMIC & COURSE MANAGEMENT CONTEXT
+    %% --------------------------------------------------------
+    subgraph AcademicContext ["2. نطاق البرامج والدورات الأكاديمية (Academic & Course Context)"]
+        Course["Course Cohort<br/>(الدورة التدريبية)"]
+        CourseWaitlist["Course Waitlist Entry<br/>(طلب قائمة الانتظار)"]
+        CourseSession["Course Session / Lecture<br/>(الجلسة التدريبية / المحاضرة)"]
+        CourseMaterial["Course Material<br/>(المادة والمورد التعليمي)"]
+    end
+
+    %% --------------------------------------------------------
+    %% 3. TEACHING & ACCOUNTABILITY CONTEXT
+    %% --------------------------------------------------------
+    subgraph TeachingContext ["3. نطاق التدريس والتقييم والمتابعة (Teaching & Accountability Context)"]
+        InstructorAssignment["Course Instructor Assignment<br/>(تكليف المدرب بالدورة)"]
+        Task["Task / Homework<br/>(المهمة / الواجب التدريبي)"]
+        Submission["Student Submission<br/>(تسليم المتدرب للواجب)"]
+        Attendance["Session Attendance<br/>(سجل حضور الجلسة)"]
+        Feedback["Qualitative Feedback<br/>(التقييم والملاحظات الفردية)"]
+    end
+
+    %% --------------------------------------------------------
+    %% 4. STUDENT ENROLLMENT & FINANCIAL COLLECTION CONTEXT
+    %% --------------------------------------------------------
+    subgraph EnrollmentFinanceContext ["4. نطاق الالتحاق والتحصيل المالي (Enrollment & Student Finance Context)"]
+        Enrollment["Student Enrollment<br/>(التحاق المتدرب بالدورة)"]
+        PaymentVoucher["Payment / Installment Voucher<br/>(سند قبض القسط المالي)"]
+        RefundRequest["Excess Refund Request<br/>(طلب استرداد الفائض المالي)"]
+    end
+
+    %% --------------------------------------------------------
+    %% 5. INSTRUCTOR SETTLEMENT CONTEXT
+    %% --------------------------------------------------------
+    subgraph InstructorFinanceContext ["5. نطاق مستحقات المدربين والمخالصات (Instructor Settlement Context)"]
+        InstructorDue["Instructor Financial Due<br/>(مستحقات المدرب المالية)"]
+    end
+
+    %% --------------------------------------------------------
+    %% 6. AUDIT & GOVERNANCE CONTEXT
+    %% --------------------------------------------------------
+    subgraph GovernanceContext ["6. نطاق التدقيق والحوكمة العملياتية (Audit & Governance Context)"]
+        AuditLog["Operational Audit Log<br/>(سجل التدقيق العملياتي والمالي)"]
+    end
+
+    %% ========================================================
+    %% DOMAIN RELATIONSHIPS & BUSINESS CARDINALITIES
+    %% ========================================================
+
+    %% Tenant Scoping & Identity Specialization
+    Center -->|"Scopes & Hosts (1 : N)"| User
+    Center -->|"Catalogs & Offers (1 : N)"| Course
+    Center -->|"Governs Enrollments (1 : N)"| Enrollment
+    Center -->|"Chronicles Operations (1 : N)"| AuditLog
+    User -->|"Specializes Role as (1 : 1)"| StudentProfile
+    User -->|"Specializes Role as (1 : 1)"| InstructorProfile
+
+    %% Academic Delivery & Curriculum Relationships
+    Course -->|"Contracts Trainers via (1 : N)"| InstructorAssignment
+    Course -->|"Schedules Lectures (1 : N)"| CourseSession
+    Course -->|"Publishes Resources (1 : N)"| CourseMaterial
+    Course -->|"Issues Academic Tasks (1 : N)"| Task
+    Course -->|"Enforces Capacity & Queues (0..1 : N)"| CourseWaitlist
+    Course -->|"Admits Trainees through (1 : N)"| Enrollment
+
+    %% Instructor Roles & Delivery
+    InstructorProfile -->|"Undertakes (1 : N)"| InstructorAssignment
+    InstructorProfile -->|"Conducts Lectures (0..1 : N)"| CourseSession
+    InstructorProfile -->|"Authors Guidance (1 : N)"| Feedback
+    InstructorAssignment -->|"Accrues Earned Terms (1 : 1)"| InstructorDue
+
+    %% Student Participation & Waitlist
+    StudentProfile -->|"Requests Placement in (0..1 : N)"| CourseWaitlist
+    StudentProfile -->|"Commits to Cohort via (1 : N)"| Enrollment
+
+    %% Session Links
+    CourseSession -->|"Verifies Presence via (1 : N)"| Attendance
+    CourseSession -.->|"Optionally Anchors (0..1 : N)"| CourseMaterial
+    CourseSession -.->|"Optionally Contextualizes (0..1 : N)"| Task
+
+    %% Student Academic Fulfillment
+    Task -->|"Collects Deliverables via (1 : N)"| Submission
+    Enrollment -->|"Submits Work for (1 : N)"| Submission
+    Enrollment -->|"Records Attendance in (1 : N)"| Attendance
+    Enrollment -->|"Receives Mentoring via (1 : N)"| Feedback
+
+    %% Student Financial Lifecycle & Excess Refund
+    Enrollment -->|"Pays Fees through (1 : N)"| PaymentVoucher
+    PaymentVoucher -->|"Triggers Overpayment into (0..1 : 1)"| RefundRequest

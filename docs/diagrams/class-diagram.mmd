@@ -1,0 +1,448 @@
+classDiagram
+    direction TB
+
+    %% ========================================================
+    %% VELORA PLATFORM - DESIGN-LEVEL UML CLASS DIAGRAM (MVP)
+    %% Domain Layer Architecture & Object-Oriented Specification
+    %% ========================================================
+
+    %% --------------------------------------------------------
+    %% 1. IDENTITY & TENANCY MANAGEMENT CONTEXT
+    %% --------------------------------------------------------
+    class Center {
+        -UUID id
+        -String name
+        -String code
+        -CenterStatus status
+        -DateTime createdAt
+        -DateTime updatedAt
+        +activate() void
+        +suspend() void
+        +isOperational() Boolean
+    }
+
+    class User {
+        -UUID id
+        -UUID centerId
+        -String fullName
+        -String email
+        -String passwordHash
+        -UserRole role
+        -AccountStatus status
+        -DateTime createdAt
+        -DateTime updatedAt
+        +verifyPassword(String plainPassword) Boolean
+        +updatePassword(String newHash) void
+        +suspend() void
+        +reactivate() void
+        +archive() void
+        +hasRole(UserRole requiredRole) Boolean
+    }
+
+    class StudentProfile {
+        -UUID id
+        -UUID userId
+        -UUID centerId
+        -String phone
+        -String civilId
+        -String notes
+        -DateTime createdAt
+        -DateTime updatedAt
+        +updateContact(String phone, String civilId, String notes) void
+    }
+
+    class InstructorProfile {
+        -UUID id
+        -UUID userId
+        -UUID centerId
+        -String phone
+        -String specialization
+        -String bio
+        -DateTime createdAt
+        -DateTime updatedAt
+        +updateQualifications(String specialization, String bio, String phone) void
+    }
+
+    %% --------------------------------------------------------
+    %% 2. ACADEMIC & COURSE MANAGEMENT CONTEXT
+    %% --------------------------------------------------------
+    class Course {
+        -UUID id
+        -UUID centerId
+        -String title
+        -String code
+        -String description
+        -Decimal basePrice
+        -Date startDate
+        -Date endDate
+        -Integer capacity
+        -CourseStatus status
+        -DateTime createdAt
+        -DateTime updatedAt
+        +publish() void
+        +conclude() void
+        +archive() void
+        +isCapacityReached(Integer activeEnrolledCount) Boolean
+        +assignInstructor(InstructorProfile instructor, CompensationModel model, Decimal value, Boolean isLead) CourseInstructor
+        +scheduleSession(Date sessionDate, Time startTime, Time endTime, String topic, InstructorProfile instructor) CourseSession
+        +canAcceptEnrollments() Boolean
+    }
+
+    class CourseInstructor {
+        -UUID id
+        -UUID courseId
+        -UUID instructorId
+        -CompensationModel compensationModel
+        -Decimal modelValue
+        -Boolean isLead
+        -DateTime createdAt
+        -DateTime updatedAt
+        +updateTerms(CompensationModel model, Decimal value, Boolean isLead) void
+        +setLeadStatus(Boolean isLead) void
+    }
+
+    class CourseSession {
+        -UUID id
+        -UUID courseId
+        -UUID instructorId
+        -Date sessionDate
+        -Time startTime
+        -Time endTime
+        -String topic
+        -Integer sessionOrder
+        -SessionStatus status
+        -DateTime createdAt
+        -DateTime updatedAt
+        +complete() void
+        +cancel(String reason) void
+        +reassignInstructor(InstructorProfile newInstructor) void
+        +isDelivered() Boolean
+    }
+
+    class CourseWaitlist {
+        -UUID id
+        -UUID courseId
+        -UUID studentId
+        -WaitlistStatus status
+        -DateTime requestedAt
+        -DateTime notifiedAt
+        -String notes
+        -DateTime createdAt
+        -DateTime updatedAt
+        +notifyVacancy() void
+        +confirmEnrollment() void
+        +cancel(String reason) void
+        +hasExpired(Integer gracePeriodHours) Boolean
+    }
+
+    class CourseMaterial {
+        -UUID id
+        -UUID courseId
+        -UUID sessionId
+        -UUID uploaderId
+        -String title
+        -String description
+        -String filePath
+        -String fileName
+        -Long fileSizeBytes
+        -String mimeType
+        -DateTime createdAt
+        -DateTime updatedAt
+        +validateFileRestrictions(Long maxSizeBytes, List~String~ allowedMimes) Boolean
+        +isLinkedToSession() Boolean
+    }
+
+    %% --------------------------------------------------------
+    %% 3. STUDENT ENROLLMENT & FINANCIAL COLLECTION CONTEXT
+    %% --------------------------------------------------------
+    class Enrollment {
+        -UUID id
+        -UUID centerId
+        -UUID courseId
+        -UUID studentId
+        -Date enrollmentDate
+        -Decimal basePrice
+        -Decimal discountAmount
+        -Decimal finalPayable
+        -Decimal totalPaid
+        -Decimal remainingBalance
+        -PaymentStatus paymentStatus
+        -EnrollmentStatus status
+        -DateTime createdAt
+        -DateTime updatedAt
+        +applyDiscount(Decimal discount) void
+        +calculateBalances() void
+        +creditApprovedPayment(Decimal amount) Decimal
+        +withdraw() void
+        +complete() void
+        +isActive() Boolean
+        +isFullyPaid() Boolean
+    }
+
+    class Payment {
+        -UUID id
+        -UUID centerId
+        -UUID enrollmentId
+        -Decimal amount
+        -Decimal appliedAmount
+        -Decimal excessAmount
+        -Date paymentDate
+        -PaymentMethod paymentMethod
+        -String receiptReference
+        -String notes
+        -PaymentVoucherStatus status
+        -UUID createdBy
+        -UUID approvedBy
+        -DateTime approvedAt
+        -String rejectionReason
+        -DateTime createdAt
+        -DateTime updatedAt
+        +approve(User approver, Decimal remainingBalance) void
+        +reject(String reason, User approver) void
+        +adjust(Decimal newAmount, String rationale, User manager) void
+        +hasExcessAmount() Boolean
+        +isPosted() Boolean
+    }
+
+    class RefundRequest {
+        -UUID id
+        -UUID centerId
+        -UUID paymentId
+        -UUID enrollmentId
+        -Decimal amount
+        -RefundStatus status
+        -PaymentMethod payoutMethod
+        -String payoutReference
+        -Date payoutDate
+        -UUID executedBy
+        -String failureReason
+        -String notes
+        -DateTime createdAt
+        -DateTime updatedAt
+        +confirmPayout(PaymentMethod method, String reference, User officer) void
+        +markFailed(String reason) void
+        +requeue() void
+        +isSettled() Boolean
+    }
+
+    %% --------------------------------------------------------
+    %% 4. TEACHING & ACCOUNTABILITY CONTEXT
+    %% --------------------------------------------------------
+    class Task {
+        -UUID id
+        -UUID courseId
+        -UUID sessionId
+        -UUID creatorId
+        -String title
+        -String instructions
+        -String attachmentPath
+        -DateTime dueDatetime
+        -Boolean allowLateSubmission
+        -DateTime createdAt
+        -DateTime updatedAt
+        +isPastDeadline() Boolean
+        +canAcceptSubmission() Boolean
+        +setLateOverride(Boolean allowed) void
+    }
+
+    class Submission {
+        -UUID id
+        -UUID taskId
+        -UUID enrollmentId
+        -String filePath
+        -String fileName
+        -Long fileSizeBytes
+        -DateTime submittedAt
+        -SubmissionStatus status
+        -String notes
+        -DateTime createdAt
+        -DateTime updatedAt
+        +replaceFile(String filePath, String fileName, Long sizeBytes) void
+        +evaluateCompliance(DateTime deadline, Boolean lateOverride) void
+        +isLate() Boolean
+    }
+
+    class Attendance {
+        -UUID id
+        -UUID sessionId
+        -UUID enrollmentId
+        -AttendanceStatus status
+        -UUID recordedBy
+        -String remarks
+        -DateTime createdAt
+        -DateTime updatedAt
+        +updateStatus(AttendanceStatus status, String remarks, User editor) void
+        +isPresent() Boolean
+    }
+
+    class Feedback {
+        -UUID id
+        -UUID courseId
+        -UUID enrollmentId
+        -UUID instructorId
+        -UUID sessionId
+        -UUID taskId
+        -String content
+        -DateTime createdAt
+        -DateTime updatedAt
+        +canBeViewedBy(User viewer) Boolean
+    }
+
+    %% --------------------------------------------------------
+    %% 5. INSTRUCTOR SETTLEMENT CONTEXT
+    %% --------------------------------------------------------
+    class InstructorDue {
+        -UUID id
+        -UUID centerId
+        -UUID courseInstructorId
+        -Decimal accruedAmount
+        -Decimal paidAmount
+        -Decimal outstandingDue
+        -InstructorDueStatus status
+        -DateTime lastCalculatedAt
+        -DateTime createdAt
+        -DateTime updatedAt
+        +accrueFixed(Decimal fixedSum) void
+        +accruePercentage(Decimal totalVerifiedCash, Decimal percentage) void
+        +accruePerSession(Integer completedSessions, Decimal sessionRate) void
+        +recordPayout(Decimal amount, String reference, PaymentMethod method, User manager) InstructorPayout
+        +recalculateOutstanding() void
+        +isFullySettled() Boolean
+    }
+
+    class InstructorPayout {
+        -UUID id
+        -UUID centerId
+        -UUID instructorDueId
+        -Decimal amount
+        -Date payoutDate
+        -PaymentMethod payoutMethod
+        -String referenceNumber
+        -String notes
+        -UUID disbursedBy
+        -DateTime createdAt
+        -DateTime updatedAt
+        +validateDisbursement() Boolean
+    }
+
+    %% --------------------------------------------------------
+    %% 6. AUDIT & GOVERNANCE CONTEXT
+    %% --------------------------------------------------------
+    class AuditLog {
+        -UUID id
+        -UUID centerId
+        -UUID userId
+        -String action
+        -String entityType
+        -UUID entityId
+        -String oldValues
+        -String newValues
+        -String ipAddress
+        -String userAgent
+        -DateTime createdAt
+        +logAction(User actor, String action, String entityType, UUID entityId, String oldJson, String newJson, String ip) AuditLog
+    }
+
+    %% --------------------------------------------------------
+    %% DOMAIN VALUE OBJECTS & ENUMERATIONS
+    %% --------------------------------------------------------
+    class UserRole {
+        <<enumeration>>
+        Manager
+        Sales
+        Instructor
+        Student
+    }
+
+    class CourseStatus {
+        <<enumeration>>
+        Draft
+        Active
+        Completed
+        Archived
+    }
+
+    class CompensationModel {
+        <<enumeration>>
+        FixedAmount
+        PercentageOfCollectedRevenue
+        PerSession
+    }
+
+    class EnrollmentStatus {
+        <<enumeration>>
+        Active
+        Completed
+        Withdrawn
+    }
+
+    class PaymentStatus {
+        <<enumeration>>
+        Unpaid
+        PartiallyPaid
+        FullyPaid
+    }
+
+    class PaymentVoucherStatus {
+        <<enumeration>>
+        Pending_Approval
+        Completed
+        Rejected
+        Adjusted
+    }
+
+    class RefundStatus {
+        <<enumeration>>
+        Pending_Refund
+        Refunded
+        Refund_Failed
+    }
+
+    class InstructorDueStatus {
+        <<enumeration>>
+        Pending
+        PartiallyPaid
+        Paid
+        Adjusted
+    }
+
+    %% ========================================================
+    %% RELATIONSHIPS, CARDINALITIES & COMPOSITION SEMANTICS
+    %% ========================================================
+
+    %% Tenancy & User Specializations
+    Center "1" *-- "0..*" User : hosts and scopes
+    Center "1" *-- "0..*" Course : catalogs
+    Center "1" *-- "0..*" AuditLog : chronicles
+    User "1" *-- "0..1" StudentProfile : specializes as (1:1)
+    User "1" *-- "0..1" InstructorProfile : specializes as (1:1)
+
+    %% Academic & Course Hierarchy
+    Course "1" *-- "1..*" CourseInstructor : contracts
+    CourseInstructor "0..*" --> "1" InstructorProfile : assigns
+    Course "1" *-- "0..*" CourseSession : schedules
+    CourseSession "0..*" --> "0..1" InstructorProfile : conducted by
+    Course "1" *-- "0..*" CourseWaitlist : queues
+    CourseWaitlist "0..*" --> "1" StudentProfile : queues student
+    Course "1" *-- "0..*" Enrollment : admits
+    Enrollment "0..*" --> "1" StudentProfile : enrolls
+    Course "1" *-- "0..*" CourseMaterial : publishes
+    CourseMaterial "0..*" --> "0..1" CourseSession : anchors optionally
+    Course "1" *-- "0..*" Task : issues
+    Task "0..*" --> "0..1" CourseSession : contexts optionally
+
+    %% Student Financial & Academic Operations
+    Enrollment "1" *-- "0..*" Payment : pays installments
+    Payment "1" --> "0..1" RefundRequest : triggers excess
+    RefundRequest "0..*" --> "1" Enrollment : reimburses
+    Task "1" *-- "0..*" Submission : collects
+    Enrollment "1" *-- "0..*" Submission : delivers
+    CourseSession "1" *-- "0..*" Attendance : records presence
+    Attendance "0..*" --> "1" Enrollment : verifies presence
+    Course "1" *-- "0..*" Feedback : anchors
+    Feedback "0..*" --> "1" Enrollment : mentors
+    Feedback "0..*" --> "1" InstructorProfile : authored by
+
+    %% Instructor Compensation
+    CourseInstructor "1" *-- "1" InstructorDue : accrues terms (1:1)
+    InstructorDue "1" *-- "0..*" InstructorPayout : settles via

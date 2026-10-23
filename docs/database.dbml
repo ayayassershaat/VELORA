@@ -1,0 +1,625 @@
+// ============================================================================
+// VELORA (فيلورا) — Training Center Management Platform
+// Database Schema Specification (DBML) — MVP Release v1.0.0
+// Compatible with: https://dbdiagram.io
+// Target DBMS: PostgreSQL 15+ (Logical Multi-Tenancy Architecture)
+// Primary Sources of Truth: PRD.md, user-flow.md, domain-model.md
+// ============================================================================
+
+// ----------------------------------------------------------------------------
+// ENUMS (Lookup & State Domains)
+// ----------------------------------------------------------------------------
+
+Enum user_role {
+  Manager     [note: 'Full administrative authority over center operations and finances']
+  Sales       [note: 'Front-desk trainee intake, enrollment, and payment receipt logging']
+  Instructor  [note: 'Course delivery, attendance, materials, tasks, and qualitative feedback']
+  Student     [note: 'Enrolled trainee accessing materials, tasks, feedback, and personal ledger']
+}
+
+Enum account_status {
+  Active      [note: 'Account is operational and authenticated sessions are allowed']
+  Suspended   [note: 'Account is temporarily locked; login is blocked']
+  Archived    [note: 'Soft-archived profile retaining full historical audit references']
+}
+
+Enum center_status {
+  Active      [note: 'Center tenant subscription is healthy and operational']
+  Suspended   [note: 'Center tenant is deactivated due to billing or policy hold']
+}
+
+Enum course_status {
+  Draft       [note: 'Course cohort is being planned; not visible for student enrollments']
+  Active      [note: 'Course is officially published, open for enrollments, and teaching']
+  Completed   [note: 'All lecture sessions delivered; financial reconciliations in progress']
+  Archived    [note: 'Locked historical cohort preserved for administrative auditing']
+}
+
+Enum compensation_model_type {
+  FixedAmount                   [note: 'Set currency lump-sum for teaching the entire course cohort']
+  PercentageOfCollectedRevenue  [note: 'Contracted percentage calculated strictly from verified cash collected']
+  PerSession                    [note: 'Set currency fee paid per completed, verified lecture session conducted']
+}
+
+Enum session_status {
+  Scheduled   [note: 'Lecture session planned on schedule']
+  Completed   [note: 'Session conducted and attendance verified']
+  Cancelled   [note: 'Session cancelled; excluded from PerSession instructor accruals']
+}
+
+Enum waitlist_status {
+  Waiting     [note: 'Student is queued in FIFO order; zero monetary fees assessed']
+  Notified    [note: 'Seat vacancy opened; student notified with time window to register']
+  Enrolled    [note: 'Student confirmed seat and successfully transitioned to official enrollment']
+  Cancelled   [note: 'Waitlist request cancelled by student or expired without confirmation']
+}
+
+Enum enrollment_status {
+  Active      [note: 'Student is actively participating in the course cohort']
+  Completed   [note: 'Student finished course cohort successfully']
+  Withdrawn   [note: 'Student formally dropped out; historical payments and attendance preserved']
+}
+
+Enum payment_status_type {
+  Unpaid          [note: 'Zero payments verified against enrollment fee (TotalPaid = 0.00)']
+  PartiallyPaid   [note: 'Partial installments paid; remaining balance > 0.00']
+  FullyPaid       [note: 'Net fee balance completely settled (RemainingBalance = 0.00)']
+}
+
+Enum payment_method_type {
+  Cash            [note: 'Physical cash received at center reception desk']
+  BankTransfer    [note: 'Direct wire or electronic banking deposit with transaction receipt']
+  POS_Card        [note: 'Physical point-of-sale card payment at reception terminal']
+  Cheque          [note: 'Physical bank cheque logged with serial reference']
+}
+
+Enum payment_voucher_status {
+  Pending_Approval  [note: 'Entered by Sales; awaiting mandatory review by Manager or Accountant']
+  Completed         [note: 'Approved and atomically posted to student enrollment balance']
+  Rejected          [note: 'Rejected by management; zero change to student financial balance']
+  Adjusted          [note: 'Corrected or reversed via authorized administrative audit entry']
+}
+
+Enum refund_status_type {
+  Pending_Refund    [note: 'Overpayment excess identified; queued for mandatory payout execution']
+  Refunded          [note: 'Physical cash or wire refund confirmed and disbursed to trainee']
+  Refund_Failed     [note: 'Disbursement failed or rejected; requeued for financial investigation']
+}
+
+Enum instructor_due_status {
+  Pending           [note: 'Accrued dues awaiting settlement disbursement']
+  PartiallyPaid     [note: 'Partial payout disbursed; outstanding due balance remains']
+  Paid              [note: 'All accrued dues fully settled with instructor']
+  Adjusted          [note: 'Balance reconciled or modified via audit settlement adjustment']
+}
+
+Enum task_submission_status {
+  On_Time           [note: 'Submitted prior to official task deadline']
+  Late              [note: 'Submitted after deadline under authorized instructor/manager override']
+}
+
+Enum attendance_status_type {
+  Present           [note: 'Student attended the scheduled lecture session']
+  Absent            [note: 'Student was absent from the scheduled lecture session']
+}
+
+// ----------------------------------------------------------------------------
+// 1. TENANCY & IDENTITY MANAGEMENT TABLES
+// ----------------------------------------------------------------------------
+
+Table centers {
+  id uuid [pk, default: `gen_random_uuid()`, note: 'Primary Key: Unique tenant identifier']
+  name varchar(255) [not null, note: 'Legal commercial name of the training center']
+  code varchar(50) [not null, unique, note: 'Unique human-readable alphanumeric tenant code (e.g., VEL-MAIN)']
+  status center_status [not null, default: 'Active', note: 'Tenant account lifecycle state']
+  created_at timestamptz [not null, default: `now()`, note: 'Center onboarding timestamp']
+  updated_at timestamptz [not null, default: `now()`, note: 'Last metadata update timestamp']
+
+  Note: 'Top-level tenant isolation boundary. All operational records partition by center_id.'
+}
+
+Table users {
+  id uuid [pk, default: `gen_random_uuid()`, note: 'Primary Key: Global physical user identity']
+  center_id uuid [not null, note: 'Foreign Key -> centers.id: Mandatory tenant scoping']
+  full_name varchar(255) [not null, note: 'Full legal name of the user']
+  email varchar(255) [not null, note: 'User authentication login email address']
+  password_hash varchar(255) [not null, note: 'Secure password hash (Argon2id or bcrypt >= cost 12)']
+  role user_role [not null, note: 'Primary operational role within this training center']
+  status account_status [not null, default: 'Active', note: 'Account access status (Active, Suspended, Archived)']
+  created_at timestamptz [not null, default: `now()`, note: 'User registration timestamp']
+  updated_at timestamptz [not null, default: `now()`, note: 'Last user update timestamp']
+
+  indexes {
+    (center_id, email) [unique, name: 'idx_users_center_email_unique']
+    (center_id, role) [name: 'idx_users_center_role']
+  }
+
+  Note: 'Authenticated user identities scoped strictly to a single training center in MVP.'
+}
+
+Table student_profiles {
+  id uuid [pk, default: `gen_random_uuid()`, note: 'Primary Key: Trainee profile entity']
+  user_id uuid [not null, unique, note: 'Foreign Key -> users.id: 1-to-1 specialization link']
+  center_id uuid [not null, note: 'Foreign Key -> centers.id: Redundant tenant key for fast RLS indexing']
+  phone varchar(50) [null, note: 'Contact mobile telephone number']
+  civil_id varchar(50) [null, note: 'National ID, Civil ID, or Passport number']
+  notes text [null, note: 'Internal administrative notes, prior qualifications, or counseling history']
+  created_at timestamptz [not null, default: `now()`, note: 'Profile creation timestamp']
+  updated_at timestamptz [not null, default: `now()`, note: 'Last profile update timestamp']
+
+  indexes {
+    (center_id, phone) [name: 'idx_student_profiles_center_phone']
+    (center_id, civil_id) [name: 'idx_student_profiles_center_civil_id']
+  }
+
+  Note: 'Trainee profile attributes extending the physical user identity for enrollment.'
+}
+
+Table instructor_profiles {
+  id uuid [pk, default: `gen_random_uuid()`, note: 'Primary Key: Academic trainer profile entity']
+  user_id uuid [not null, unique, note: 'Foreign Key -> users.id: 1-to-1 specialization link']
+  center_id uuid [not null, note: 'Foreign Key -> centers.id: Redundant tenant key for fast RLS indexing']
+  phone varchar(50) [null, note: 'Trainer contact mobile phone number']
+  specialization varchar(255) [null, note: 'Academic domain or technical expertise (e.g., Full-Stack, UI/UX)']
+  bio text [null, note: 'Professional biography, certifications, and teaching credentials']
+  created_at timestamptz [not null, default: `now()`, note: 'Profile creation timestamp']
+  updated_at timestamptz [not null, default: `now()`, note: 'Last profile update timestamp']
+
+  indexes {
+    (center_id, specialization) [name: 'idx_instructor_profiles_specialization']
+  }
+
+  Note: 'Instructor profile attributes extending user identity for course assignment and delivery.'
+}
+
+// ----------------------------------------------------------------------------
+// 2. ACADEMIC & COURSE MANAGEMENT TABLES
+// ----------------------------------------------------------------------------
+
+Table courses {
+  id uuid [pk, default: `gen_random_uuid()`, note: 'Primary Key: Unique course cohort identifier']
+  center_id uuid [not null, note: 'Foreign Key -> centers.id: Tenant ownership']
+  title varchar(255) [not null, note: 'Course cohort title (e.g., Full-Stack Web Bootcamp)']
+  code varchar(50) [not null, note: 'Center-unique course catalog code (e.g., FSW-2026-Q4)']
+  description text [null, note: 'Detailed syllabus overview and learning outcomes']
+  base_price decimal(10,2) [not null, note: 'Catalog base tuition fee (CHECK: base_price >= 0.00)']
+  start_date date [not null, note: 'Scheduled start date of cohort instruction']
+  end_date date [not null, note: 'Scheduled completion date (CHECK: end_date >= start_date)']
+  capacity int [null, note: 'Seat inventory limit; NULL represents uncapped cohort (CHECK: capacity > 0)']
+  status course_status [not null, default: 'Draft', note: 'Lifecycle status (Draft, Active, Completed, Archived)']
+  created_at timestamptz [not null, default: `now()`, note: 'Course creation timestamp']
+  updated_at timestamptz [not null, default: `now()`, note: 'Last course update timestamp']
+
+  indexes {
+    (center_id, code) [unique, name: 'idx_courses_center_code_unique']
+    (center_id, status) [name: 'idx_courses_center_status']
+    (start_date, end_date) [name: 'idx_courses_dates']
+  }
+
+  Note: 'Course cohort offering. Capacity acts as finite seat inventory; guarded by SELECT FOR UPDATE during enrollment.'
+}
+
+Table course_instructors {
+  id uuid [pk, default: `gen_random_uuid()`, note: 'Primary Key: Course instructor assignment agreement']
+  course_id uuid [not null, note: 'Foreign Key -> courses.id: Assigned course cohort']
+  instructor_id uuid [not null, note: 'Foreign Key -> instructor_profiles.id: Contracted instructor']
+  compensation_model compensation_model_type [not null, note: 'Model: FixedAmount, PercentageOfCollectedRevenue, or PerSession']
+  model_value decimal(10,2) [not null, note: 'Value: Currency lump-sum, percentage rate (0.01-100.00), or rate per session (CHECK: >= 0.00)']
+  is_lead boolean [not null, default: false, note: 'Flag indicating whether this instructor is the lead trainer']
+  created_at timestamptz [not null, default: `now()`, note: 'Assignment creation timestamp']
+  updated_at timestamptz [not null, default: `now()`, note: 'Last agreement update timestamp']
+
+  indexes {
+    (course_id, instructor_id) [unique, name: 'idx_course_instructors_unique_pair']
+    instructor_id [name: 'idx_course_instructors_instructor']
+  }
+
+  Note: 'Contractual assignment linking instructors to courses with binding compensation terms.'
+}
+
+Table course_sessions {
+  id uuid [pk, default: `gen_random_uuid()`, note: 'Primary Key: Lecture session identifier']
+  course_id uuid [not null, note: 'Foreign Key -> courses.id: Parent course cohort']
+  instructor_id uuid [null, note: 'Foreign Key -> instructor_profiles.id: Assigned lecture conductor']
+  session_date date [not null, note: 'Calendar date of the scheduled lecture session']
+  start_time time [not null, note: 'Scheduled lecture start time']
+  end_time time [not null, note: 'Scheduled lecture finish time (CHECK: end_time > start_time)']
+  topic varchar(255) [not null, note: 'Educational topic or lesson agenda (e.g., PostgreSQL Indexing)']
+  session_order int [not null, default: 1, note: 'Chronological sequence order of session within course (CHECK: >= 1)']
+  status session_status [not null, default: 'Scheduled', note: 'Session delivery status (Scheduled, Completed, Cancelled)']
+  created_at timestamptz [not null, default: `now()`, note: 'Session scheduling timestamp']
+  updated_at timestamptz [not null, default: `now()`, note: 'Last session update timestamp']
+
+  indexes {
+    (course_id, session_order) [name: 'idx_course_sessions_course_order']
+    (course_id, session_date) [name: 'idx_course_sessions_course_date']
+    instructor_id [name: 'idx_course_sessions_instructor']
+  }
+
+  Note: 'Discrete scheduled lecture unit. Serves as anchor for attendance and per-session compensation.'
+}
+
+Table course_waitlists {
+  id uuid [pk, default: `gen_random_uuid()`, note: 'Primary Key: Waitlist queue entry']
+  course_id uuid [not null, note: 'Foreign Key -> courses.id: Target filled course cohort']
+  student_id uuid [not null, note: 'Foreign Key -> student_profiles.id: Queued prospective trainee']
+  status waitlist_status [not null, default: 'Waiting', note: 'Queue state: Waiting, Notified, Enrolled, Cancelled']
+  requested_at timestamptz [not null, default: `now()`, note: 'Exact timestamp of queue entry for strict FIFO ordering']
+  notified_at timestamptz [null, note: 'Timestamp when student was notified of an open vacancy']
+  notes text [null, note: 'Staff remarks regarding waitlist follow-up or contact preferences']
+  created_at timestamptz [not null, default: `now()`, note: 'Record creation timestamp']
+  updated_at timestamptz [not null, default: `now()`, note: 'Last status update timestamp']
+
+  indexes {
+    (course_id, requested_at) [name: 'idx_course_waitlists_fifo']
+    (course_id, student_id, status) [name: 'idx_course_waitlists_course_student_status']
+  }
+
+  Note: 'FIFO queue for filled courses (OQ-06 / BR-CRS-WAITLIST-FIFO). Zero fees assessed until enrolled.'
+}
+
+// ----------------------------------------------------------------------------
+// 3. STUDENT ENROLLMENT & FINANCIAL MANAGEMENT TABLES
+// ----------------------------------------------------------------------------
+
+Table enrollments {
+  id uuid [pk, default: `gen_random_uuid()`, note: 'Primary Key: Enrollment agreement identifier']
+  center_id uuid [not null, note: 'Foreign Key -> centers.id: Tenant partition key']
+  course_id uuid [not null, note: 'Foreign Key -> courses.id: Enrolled course cohort']
+  student_id uuid [not null, note: 'Foreign Key -> student_profiles.id: Enrolled student trainee']
+  enrollment_date date [not null, default: `CURRENT_DATE`, note: 'Date of formal enrollment intake']
+  base_price decimal(10,2) [not null, note: 'Catalog course price at enrollment snapshot (CHECK: >= 0.00)']
+  discount_amount decimal(10,2) [not null, default: 0.00, note: 'Approved discount deduction (CHECK: discount_amount >= 0.00 AND <= base_price)']
+  final_payable decimal(10,2) [not null, note: 'Net payable fee = base_price - discount_amount (CHECK: >= 0.00)']
+  total_paid decimal(10,2) [not null, default: 0.00, note: 'Running sum of verified completed payments (CHECK: >= 0.00)']
+  remaining_balance decimal(10,2) [not null, note: 'Outstanding balance = final_payable - total_paid (CHECK: remaining_balance >= 0.00)']
+  payment_status payment_status_type [not null, default: 'Unpaid', note: 'Payment status: Unpaid, PartiallyPaid, FullyPaid']
+  status enrollment_status [not null, default: 'Active', note: 'Academic status: Active, Completed, Withdrawn']
+  created_at timestamptz [not null, default: `now()`, note: 'Enrollment creation timestamp']
+  updated_at timestamptz [not null, default: `now()`, note: 'Last balance or status update timestamp']
+
+  indexes {
+    (course_id, student_id) [name: 'idx_enrollments_course_student']
+    (center_id, student_id) [name: 'idx_enrollments_center_student']
+    (center_id, payment_status) [name: 'idx_enrollments_center_payment_status']
+    (center_id, status) [name: 'idx_enrollments_center_status']
+  }
+
+  Note: 'Binding enrollment contract and student financial ledger header. Enforces single active enrollment per course.'
+}
+
+Table payments {
+  id uuid [pk, default: `gen_random_uuid()`, note: 'Primary Key: Payment voucher transaction identifier']
+  center_id uuid [not null, note: 'Foreign Key -> centers.id: Tenant scoping']
+  enrollment_id uuid [not null, note: 'Foreign Key -> enrollments.id: Associated student enrollment']
+  amount decimal(10,2) [not null, note: 'Gross voucher payment amount received (CHECK: amount > 0.00)']
+  applied_amount decimal(10,2) [not null, default: 0.00, note: 'Portion applied to course fee (CHECK: applied_amount >= 0.00)']
+  excess_amount decimal(10,2) [not null, default: 0.00, note: 'Portion detected as excess overpayment (CHECK: excess_amount >= 0.00)']
+  payment_date date [not null, note: 'Calendar date when money was physically received']
+  payment_method payment_method_type [not null, note: 'Channel: Cash, BankTransfer, POS_Card, Cheque']
+  receipt_reference varchar(100) [null, note: 'Paper receipt serial number, POS slip ID, or bank transfer reference']
+  notes text [null, note: 'Internal sales or reception notes regarding voucher receipt']
+  status payment_voucher_status [not null, default: 'Pending_Approval', note: 'Approval state: Pending_Approval, Completed, Rejected, Adjusted']
+  created_by uuid [not null, note: 'Foreign Key -> users.id: Staff member (Sales/Manager) who entered voucher']
+  approved_by uuid [null, note: 'Foreign Key -> users.id: Manager or Accountant who verified and approved voucher']
+  approved_at timestamptz [null, note: 'Timestamp when manager officially approved and posted payment']
+  rejection_reason text [null, note: 'Mandatory explanation if voucher was rejected by manager']
+  created_at timestamptz [not null, default: `now()`, note: 'Voucher creation timestamp']
+  updated_at timestamptz [not null, default: `now()`, note: 'Last state change timestamp']
+
+  indexes {
+    (enrollment_id, status) [name: 'idx_payments_enrollment_status']
+    (center_id, payment_date) [name: 'idx_payments_center_date']
+    (center_id, status) [name: 'idx_payments_center_status']
+    receipt_reference [name: 'idx_payments_receipt_ref']
+  }
+
+  Note: 'Offline payment voucher. Governed by 2-phase administrative approval (OQ-02). Immutable once completed.'
+}
+
+Table refund_requests {
+  id uuid [pk, default: `gen_random_uuid()`, note: 'Primary Key: Excess refund claim identifier']
+  center_id uuid [not null, note: 'Foreign Key -> centers.id: Tenant partition key']
+  payment_id uuid [not null, unique, note: 'Foreign Key -> payments.id: 1-to-1 link to triggering overpayment voucher']
+  enrollment_id uuid [not null, note: 'Foreign Key -> enrollments.id: Trainee enrollment receiving reimbursement']
+  amount decimal(10,2) [not null, note: 'Exact excess currency amount to be reimbursed (CHECK: amount > 0.00)']
+  status refund_status_type [not null, default: 'Pending_Refund', note: 'Refund state: Pending_Refund, Refunded, Refund_Failed']
+  payout_method payment_method_type [null, note: 'Disbursement method: Cash or BankTransfer']
+  payout_reference varchar(100) [null, note: 'Disbursement bank wire reference or signed cash receipt voucher']
+  payout_date date [null, note: 'Calendar date when refund payout was physically executed']
+  executed_by uuid [null, note: 'Foreign Key -> users.id: Financial officer or manager who disbursed reimbursement']
+  failure_reason text [null, note: 'Documentation of banking failure or disbursement hold']
+  notes text [null, note: 'Internal accounting remarks regarding refund processing']
+  created_at timestamptz [not null, default: `now()`, note: 'Auto-generation timestamp upon overpayment detection']
+  updated_at timestamptz [not null, default: `now()`, note: 'Last status transition timestamp']
+
+  indexes {
+    (center_id, status) [name: 'idx_refund_requests_center_status']
+    enrollment_id [name: 'idx_refund_requests_enrollment']
+  }
+
+  Note: 'Mandatory excess refund lifecycle (OQ-05 / BR-FIN-OVERPAY-REFUND). Prohibits automatic credit balances.'
+}
+
+// ----------------------------------------------------------------------------
+// 4. LEARNING INTERACTIONS & ACCOUNTABILITY TABLES
+// ----------------------------------------------------------------------------
+
+Table course_materials {
+  id uuid [pk, default: `gen_random_uuid()`, note: 'Primary Key: Digital educational resource identifier']
+  course_id uuid [not null, note: 'Foreign Key -> courses.id: Parent course cohort']
+  session_id uuid [null, note: 'Foreign Key -> course_sessions.id: Optional anchoring to a specific lecture session']
+  uploader_id uuid [not null, note: 'Foreign Key -> users.id: Staff member or instructor who uploaded asset']
+  title varchar(255) [not null, note: 'Display title of educational asset (e.g., Session 1 Slides)']
+  description text [null, note: 'Brief notes on resource contents or recommended preparation']
+  file_path varchar(500) [not null, note: 'Protected storage path outside public webroot']
+  file_name varchar(255) [not null, note: 'Original uploaded filename with extension']
+  file_size_bytes bigint [not null, note: 'File size in bytes (CHECK: file_size_bytes > 0 AND <= 26214400 [25MB])']
+  mime_type varchar(100) [not null, note: 'Validated MIME type (application/pdf, application/zip, etc.)']
+  created_at timestamptz [not null, default: `now()`, note: 'Asset upload timestamp']
+  updated_at timestamptz [not null, default: `now()`, note: 'Last asset metadata update timestamp']
+
+  indexes {
+    (course_id, session_id) [name: 'idx_course_materials_course_session']
+    uploader_id [name: 'idx_course_materials_uploader']
+  }
+
+  Note: 'Course learning assets. Download access strictly restricted to enrolled students and assigned instructors.'
+}
+
+Table tasks {
+  id uuid [pk, default: `gen_random_uuid()`, note: 'Primary Key: Homework assignment identifier']
+  course_id uuid [not null, note: 'Foreign Key -> courses.id: Parent course cohort']
+  session_id uuid [null, note: 'Foreign Key -> course_sessions.id: Optional anchoring to a lecture session']
+  creator_id uuid [not null, note: 'Foreign Key -> users.id: Instructor or manager who issued homework']
+  title varchar(255) [not null, note: 'Task assignment headline (e.g., Wireframe Project v1)']
+  instructions text [not null, note: 'Detailed homework requirements, rubric, and deliverables description']
+  attachment_path varchar(500) [null, note: 'Optional template or starter asset path provided by instructor']
+  due_datetime timestamptz [null, note: 'Official submission deadline; NULL indicates open-ended homework']
+  allow_late_submission boolean [not null, default: false, note: 'Override toggle allowing submissions past deadline (OQ-03)']
+  created_at timestamptz [not null, default: `now()`, note: 'Task publication timestamp']
+  updated_at timestamptz [not null, default: `now()`, note: 'Last task update timestamp']
+
+  indexes {
+    (course_id, due_datetime) [name: 'idx_tasks_course_due_datetime']
+    creator_id [name: 'idx_tasks_creator']
+  }
+
+  Note: 'Academic assignments. Enforces automatic deadline closing unless manual late override is activated.'
+}
+
+Table submissions {
+  id uuid [pk, default: `gen_random_uuid()`, note: 'Primary Key: Student homework deliverable identifier']
+  task_id uuid [not null, note: 'Foreign Key -> tasks.id: Target assignment']
+  enrollment_id uuid [not null, note: 'Foreign Key -> enrollments.id: Submitting student enrollment']
+  file_path varchar(500) [not null, note: 'Protected storage path to uploaded homework file']
+  file_name varchar(255) [not null, note: 'Original uploaded filename with extension']
+  file_size_bytes bigint [not null, note: 'File size in bytes (CHECK: file_size_bytes > 0 AND <= 26214400 [25MB])']
+  submitted_at timestamptz [not null, default: `now()`, note: 'Timestamp when deliverable was received by server']
+  status task_submission_status [not null, note: 'Compliance status: On_Time or Late']
+  notes text [null, note: 'Optional trainee remarks or questions submitted alongside file']
+  created_at timestamptz [not null, default: `now()`, note: 'Initial upload timestamp']
+  updated_at timestamptz [not null, default: `now()`, note: 'Last file replacement timestamp']
+
+  indexes {
+    (task_id, enrollment_id) [unique, name: 'idx_submissions_task_enrollment_unique']
+    (task_id, status) [name: 'idx_submissions_task_status']
+    enrollment_id [name: 'idx_submissions_enrollment']
+  }
+
+  Note: 'Student homework deliverables. Allows file replacement prior to deadline. Strictly hidden from Sales.'
+}
+
+Table attendances {
+  id uuid [pk, default: `gen_random_uuid()`, note: 'Primary Key: Session attendance record identifier']
+  session_id uuid [not null, note: 'Foreign Key -> course_sessions.id: Lecture session held']
+  enrollment_id uuid [not null, note: 'Foreign Key -> enrollments.id: Enrolled student trainee']
+  status attendance_status_type [not null, note: 'Binary presence status: Present or Absent']
+  recorded_by uuid [not null, note: 'Foreign Key -> users.id: Instructor or manager who recorded attendance']
+  remarks varchar(255) [null, note: 'Optional remarks (e.g., arrived 15 mins late, excused medical leave)']
+  created_at timestamptz [not null, default: `now()`, note: 'Attendance recording timestamp']
+  updated_at timestamptz [not null, default: `now()`, note: 'Last attendance modification timestamp']
+
+  indexes {
+    (session_id, enrollment_id) [unique, name: 'idx_attendances_session_enrollment_unique']
+    (enrollment_id, status) [name: 'idx_attendances_enrollment_status']
+    recorded_by [name: 'idx_attendances_recorded_by']
+  }
+
+  Note: 'Session-based attendance sheet (FR-ATT-04 / BR-ATT-03). Unique constraint prevents duplicate rows.'
+}
+
+Table feedbacks {
+  id uuid [pk, default: `gen_random_uuid()`, note: 'Primary Key: Qualitative mentoring feedback identifier']
+  course_id uuid [not null, note: 'Foreign Key -> courses.id: Associated course cohort']
+  enrollment_id uuid [not null, note: 'Foreign Key -> enrollments.id: Recipient student enrollment']
+  instructor_id uuid [not null, note: 'Foreign Key -> instructor_profiles.id: Authoring trainer']
+  session_id uuid [null, note: 'Foreign Key -> course_sessions.id: Optional context link to specific lecture']
+  task_id uuid [null, note: 'Foreign Key -> tasks.id: Optional context link to evaluated homework']
+  content text [not null, note: 'Qualitative evaluation narrative and mentoring feedback (up to 2000 chars)']
+  created_at timestamptz [not null, default: `now()`, note: 'Feedback submission timestamp']
+  updated_at timestamptz [not null, default: `now()`, note: 'Last feedback update timestamp']
+
+  indexes {
+    (enrollment_id, created_at) [name: 'idx_feedbacks_enrollment_date']
+    (course_id, instructor_id) [name: 'idx_feedbacks_course_instructor']
+  }
+
+  Note: 'Private 1-to-1 pedagogical feedback. Visible only to recipient student, authoring instructor, and manager.'
+}
+
+// ----------------------------------------------------------------------------
+// 5. INSTRUCTOR COMPENSATION & SETTLEMENT TABLES
+// ----------------------------------------------------------------------------
+
+Table instructor_dues {
+  id uuid [pk, default: `gen_random_uuid()`, note: 'Primary Key: Instructor financial liability ledger identifier']
+  center_id uuid [not null, note: 'Foreign Key -> centers.id: Tenant scoping']
+  course_instructor_id uuid [not null, unique, note: 'Foreign Key -> course_instructors.id: 1-to-1 agreement link']
+  accrued_amount decimal(10,2) [not null, default: 0.00, note: 'Dynamically computed earnings (CHECK: accrued_amount >= 0.00)']
+  paid_amount decimal(10,2) [not null, default: 0.00, note: 'Cumulative settlement payouts disbursed (CHECK: paid_amount >= 0.00)']
+  outstanding_due decimal(10,2) [not null, default: 0.00, note: 'Current payable liability = accrued_amount - paid_amount']
+  status instructor_due_status [not null, default: 'Pending', note: 'Settlement state: Pending, PartiallyPaid, Paid, Adjusted']
+  last_calculated_at timestamptz [not null, default: `now()`, note: 'Timestamp when calculation engine last refreshed accrued_amount']
+  created_at timestamptz [not null, default: `now()`, note: 'Ledger initialization timestamp']
+  updated_at timestamptz [not null, default: `now()`, note: 'Last ledger update timestamp']
+
+  indexes {
+    (center_id, status) [name: 'idx_instructor_dues_center_status']
+    course_instructor_id [name: 'idx_instructor_dues_agreement']
+  }
+
+  Note: 'Accrued instructor compensation dues ledger. 1-to-1 with course instructor assignment.'
+}
+
+Table instructor_payouts {
+  id uuid [pk, default: `gen_random_uuid()`, note: 'Primary Key: Settlement payout disbursement identifier']
+  center_id uuid [not null, note: 'Foreign Key -> centers.id: Tenant scoping']
+  instructor_due_id uuid [not null, note: 'Foreign Key -> instructor_dues.id: Parent liability ledger']
+  amount decimal(10,2) [not null, note: 'Disbursed payout amount (CHECK: amount > 0.00)']
+  payout_date date [not null, note: 'Calendar date when payment was transferred to instructor']
+  payout_method payment_method_type [not null, note: 'Channel: BankTransfer, Cash, Cheque']
+  reference_number varchar(100) [null, note: 'Bank transfer reference, receipt voucher serial, or cheque number']
+  notes text [null, note: 'Internal management remarks regarding settlement release']
+  disbursed_by uuid [not null, note: 'Foreign Key -> users.id: Manager who authorized and issued disbursement']
+  created_at timestamptz [not null, default: `now()`, note: 'Disbursement logging timestamp']
+  updated_at timestamptz [not null, default: `now()`, note: 'Last payout update timestamp']
+
+  indexes {
+    (instructor_due_id, payout_date) [name: 'idx_instructor_payouts_due_date']
+    (center_id, payout_date) [name: 'idx_instructor_payouts_center_date']
+    disbursed_by [name: 'idx_instructor_payouts_disbursed_by']
+  }
+
+  Note: 'Disbursement transaction receipts settling instructor dues. Preserves immutable payout audit history.'
+}
+
+// ----------------------------------------------------------------------------
+// 6. AUDIT & GOVERNANCE TABLES
+// ----------------------------------------------------------------------------
+
+Table audit_logs {
+  id uuid [pk, default: `gen_random_uuid()`, note: 'Primary Key: Immutable audit record identifier']
+  center_id uuid [not null, note: 'Foreign Key -> centers.id: Mandatory tenant partition key']
+  user_id uuid [null, note: 'Foreign Key -> users.id: Actor who performed action; NULL for automated system events']
+  action varchar(100) [not null, note: 'Business event identifier (e.g., PAYMENT_APPROVED, COURSE_ARCHIVED)']
+  entity_type varchar(100) [not null, note: 'Target domain table name (e.g., payments, enrollments, courses)']
+  entity_id uuid [not null, note: 'Primary key value of the affected entity record']
+  old_values jsonb [null, note: 'JSON snapshot of entity attributes before modification']
+  new_values jsonb [null, note: 'JSON snapshot of entity attributes after modification']
+  ip_address varchar(45) [null, note: 'Client IPv4 or IPv6 address initiating request']
+  user_agent varchar(255) [null, note: 'Client browser or mobile user-agent string']
+  created_at timestamptz [not null, default: `now()`, note: 'Immutable event occurrence timestamp']
+
+  indexes {
+    (center_id, created_at) [name: 'idx_audit_logs_center_timestamp']
+    (entity_type, entity_id) [name: 'idx_audit_logs_entity']
+    (center_id, user_id) [name: 'idx_audit_logs_center_user']
+    action [name: 'idx_audit_logs_action']
+  }
+
+  Note: 'Append-only system audit trail (FR-AUD-01/02). Read-only access restricted exclusively to Center Managers.'
+}
+
+// ----------------------------------------------------------------------------
+// RELATIONSHIPS & FOREIGN KEY DEFINITIONS
+// ----------------------------------------------------------------------------
+
+// Tenancy & Identity Relationships
+Ref: users.center_id > centers.id [delete: restrict]
+Ref: student_profiles.user_id - users.id [delete: cascade]
+Ref: student_profiles.center_id > centers.id [delete: restrict]
+Ref: instructor_profiles.user_id - users.id [delete: cascade]
+Ref: instructor_profiles.center_id > centers.id [delete: restrict]
+
+// Academic Program Relationships
+Ref: courses.center_id > centers.id [delete: restrict]
+Ref: course_instructors.course_id > courses.id [delete: restrict]
+Ref: course_instructors.instructor_id > instructor_profiles.id [delete: restrict]
+Ref: course_sessions.course_id > courses.id [delete: cascade]
+Ref: course_sessions.instructor_id > instructor_profiles.id [delete: set null]
+Ref: course_waitlists.course_id > courses.id [delete: cascade]
+Ref: course_waitlists.student_id > student_profiles.id [delete: cascade]
+
+// Student Enrollment & Financial Relationships
+Ref: enrollments.center_id > centers.id [delete: restrict]
+Ref: enrollments.course_id > courses.id [delete: restrict]
+Ref: enrollments.student_id > student_profiles.id [delete: restrict]
+Ref: payments.center_id > centers.id [delete: restrict]
+Ref: payments.enrollment_id > enrollments.id [delete: restrict]
+Ref: payments.created_by > users.id [delete: restrict]
+Ref: payments.approved_by > users.id [delete: set null]
+Ref: refund_requests.center_id > centers.id [delete: restrict]
+Ref: refund_requests.payment_id - payments.id [delete: restrict]
+Ref: refund_requests.enrollment_id > enrollments.id [delete: restrict]
+Ref: refund_requests.executed_by > users.id [delete: set null]
+
+// Learning Interactions & Accountability Relationships
+Ref: course_materials.course_id > courses.id [delete: cascade]
+Ref: course_materials.session_id > course_sessions.id [delete: set null]
+Ref: course_materials.uploader_id > users.id [delete: set null]
+Ref: tasks.course_id > courses.id [delete: cascade]
+Ref: tasks.session_id > course_sessions.id [delete: set null]
+Ref: tasks.creator_id > users.id [delete: set null]
+Ref: submissions.task_id > tasks.id [delete: cascade]
+Ref: submissions.enrollment_id > enrollments.id [delete: restrict]
+Ref: attendances.session_id > course_sessions.id [delete: cascade]
+Ref: attendances.enrollment_id > enrollments.id [delete: restrict]
+Ref: attendances.recorded_by > users.id [delete: set null]
+Ref: feedbacks.course_id > courses.id [delete: cascade]
+Ref: feedbacks.enrollment_id > enrollments.id [delete: restrict]
+Ref: feedbacks.instructor_id > instructor_profiles.id [delete: restrict]
+Ref: feedbacks.session_id > course_sessions.id [delete: set null]
+Ref: feedbacks.task_id > tasks.id [delete: set null]
+
+// Instructor Compensation Relationships
+Ref: instructor_dues.center_id > centers.id [delete: restrict]
+Ref: instructor_dues.course_instructor_id - course_instructors.id [delete: restrict]
+Ref: instructor_payouts.center_id > centers.id [delete: restrict]
+Ref: instructor_payouts.instructor_due_id > instructor_dues.id [delete: restrict]
+Ref: instructor_payouts.disbursed_by > users.id [delete: restrict]
+
+// Governance & Audit Relationships
+Ref: audit_logs.center_id > centers.id [delete: restrict]
+Ref: audit_logs.user_id > users.id [delete: set null]
+
+// ----------------------------------------------------------------------------
+// TABLE GROUPS (Visual Canvas Grouping in dbdiagram.io)
+// ----------------------------------------------------------------------------
+
+TableGroup Identity_and_Tenancy {
+  centers
+  users
+  student_profiles
+  instructor_profiles
+}
+
+TableGroup Academic_and_Curriculum {
+  courses
+  course_instructors
+  course_sessions
+  course_waitlists
+  course_materials
+}
+
+TableGroup Enrollment_and_Student_Finance {
+  enrollments
+  payments
+  refund_requests
+}
+
+TableGroup Academic_Accountability_and_Delivery {
+  tasks
+  submissions
+  attendances
+  feedbacks
+}
+
+TableGroup Instructor_Settlements {
+  instructor_dues
+  instructor_payouts
+}
+
+TableGroup Governance_and_Audit {
+  audit_logs
+}
