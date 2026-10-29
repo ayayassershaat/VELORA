@@ -5,7 +5,7 @@
 **Document Version:** 1.0.0  
 **Status:** Approved for Implementation (MVP)  
 **Target Environment:** Web Application (Responsive Desktop & Mobile)  
-**Primary Language:** English  
+**Primary Language:** Arabic (RTL)  
 **Date:** October 2026  
 
 ---
@@ -780,6 +780,14 @@ The following capabilities represent the non-negotiable functional core required
 - **NFR-SEC-02 (Session Cookie Security):** Authentication cookies must enforce flags: `HttpOnly`, `Secure`, and `SameSite=Lax` (or `Strict`).
 - **NFR-SEC-03 (Tenant Isolation Defense):** All database queries must enforce `WHERE center_id = ?`. PostgreSQL Row-Level Security (RLS) is evaluated as an additional layer of defense.
 - **NFR-SEC-04 (File Storage Security):** Stored files must reside outside the public web root. File download requests must pass through an authentication and course-enrollment authorization check before streaming bytes.
+
+### 12.7 Localization & RTL
+- **NFR-LOC-01 (Document Language & Direction):** The primary user interface must be rendered with root HTML attributes `lang="ar"` and `dir="rtl"`.
+- **NFR-LOC-02 (Logical CSS Properties):** All layout spacing, margins, paddings, and alignment must utilize CSS logical properties (e.g., `margin-inline-start/end` (`ms`/`me`), `padding-inline-start/end` (`ps`/`pe`), `inset-inline-start/end` (`start`/`end`)) to ensure native bi-directional rendering.
+- **NFR-LOC-03 (Directional Icon Mirroring):** Directional navigation indicators, arrows, and chevrons must be mirrored in RTL, while non-directional utility icons (search, settings, media controls, logos) remain unmirrored.
+- **NFR-LOC-04 (Typography & Font Family):** The primary Arabic font family is `IBM Plex Sans Arabic` with clean fallbacks (`system-ui`, `sans-serif`), preserving legible type scales across all viewports.
+- **NFR-LOC-05 (Numeral Formatting):** System IDs, financial currency amounts, phone numbers, and calendar dates must use Western Arabic (Latin) numerals (`0-9`) for clear operational precision.
+- **NFR-LOC-06 (Internationalization Formatting):** All dynamic dates, times, relative timestamps, and currency amounts must be formatted using standard `Intl` APIs configured with the `"ar"` locale (e.g., `Intl.DateTimeFormat("ar", ...)`, `Intl.NumberFormat("ar", ...)`).
 
 ---
 

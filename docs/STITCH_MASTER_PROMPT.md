@@ -12,7 +12,7 @@ Your sole focus is to design and build the MVP of VELORA exactly as specified. D
 Project Name: VELORA (فيلورا)
 Type: Multi-Tenant SaaS Web Application for Training Center Management
 Target: Web Application (Responsive) 
-Primary Language: English (No RTL required for MVP)
+Primary Language: Arabic (RTL)
 Tech Alignment: Next.js (React), TypeScript, Tailwind CSS
 Status: Approved for MVP Implementation
 
@@ -26,6 +26,16 @@ Goal: Consolidate course management, student tracking, attendance, tasks, offlin
   - Icon only (navy rounded square with a white and gold "V"): collapsed sidebar, mobile top bar, favicon, small spaces.
 - Clear space around the logo = height of the "V" letter.
 - Brand colors: Primary #14243A, Secondary #C5A46D, Tertiary #2E7D5B, Neutral #253244. Font: Inter.
+- Logo placement: Place the full logo at the top-right of the sidebar and above the login card.
+
+## Language & Direction
+- Entire UI in Arabic: All labels, buttons, navigation items, tooltips, table headers, validation messages, and empty states must be in natural, professional Modern Standard Arabic (فصحى معاصرة), avoiding literal word-for-word translation.
+- Full RTL: The application root enforces `dir="rtl"` and `lang="ar"`.
+- Layout Structure: Main sidebar is fixed on the right side of the screen (`right-0`). Content canvas flows from right to left.
+- Text Alignment: Default text alignment is right-aligned (`text-right`). Numeric values, tables, and badge indicators align logically for RTL.
+- Directional Mirroring: Mirror directional navigation icons, arrows, and chevrons (back/forward, breadcrumbs, expand/collapse). Do NOT mirror non-directional utility icons (search, settings, lock, attachments, user avatar, or the VELORA brand logo).
+- Typography & Font: Primary font family is `IBM Plex Sans Arabic` (`font-sans`), with clean fallbacks.
+- Numerals: Use Western Arabic (Latin) numerals (`0-9`) for all currency amounts, transaction IDs, phone numbers, percentages, and dates (e.g., "₪ 3,200", "01/11/2026", "SCR-M-01").
 
 # SOURCE OF TRUTH
 You MUST strictly follow these documents for this task:

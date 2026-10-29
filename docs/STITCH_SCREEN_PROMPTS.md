@@ -27,19 +27,20 @@ Every prompt in this specification automatically inherits and enforces these sha
 
 ```
 +-----------------------------------------------------------------------------------+
-| SHARED TOP HEADER (Fixed 64px, z-40, bg-white, border-b border-slate-200)         |
-| [VELORA Logo] [Center Name Badge]   [Dashboard Link]    [Notifications Bell] [User Dropdown]|
-+-----------------------+-----------------------------------------------------------+
-| SHARED SIDEBAR        | MAIN CONTENT CANVAS (Scrollable, bg-slate-50, p-6 to p-8)   |
-| (w-64, bg-white,      | - Page Header (Title, Subtitle, Primary Action CTAs)       |
-| border-r slate-200,   | - Metric KPI Summary Cards (4-col grid, gap-4)            |
-| Role-Filtered Links)  | - Primary Data Tables / Workspace Forms                   |
-|                       | - Modals / Drawers (Centered z-50, dark overlay)          |
-+-----------------------+-----------------------------------------------------------+
+| SHARED TOP HEADER - RTL (Fixed 64px, z-40, bg-white, border-b border-slate-200)   |
+| [User Dropdown] [Notifications Bell]    [Dashboard Link]   [Center Badge] [VELORA Logo]|
++-----------------------------------------------------------+-----------------------+
+| MAIN CONTENT CANVAS (Scrollable, bg-slate-50, p-6 to p-8)   | SHARED SIDEBAR (RTL)  |
+| - Page Header (Title, Subtitle, Primary Action CTAs)       | (w-64, bg-white,      |
+| - Metric KPI Summary Cards (4-col grid, gap-4)            | border-l slate-200,   |
+| - Primary Data Tables / Workspace Forms                   | Role-Filtered Links)  |
+| - Modals / Drawers (Centered z-50, dark overlay)          |                       |
++-----------------------------------------------------------+-----------------------+
 ```
 
 ### 1. Global Visual & Style Tokens
 - **Design Philosophy:** Clean enterprise administrative SaaS. High information density, scannable data grids, clear typographical hierarchy, zero decorative clutter.
+- **Language & Direction:** Native Arabic (RTL), root attributes `dir="rtl"` and `lang="ar"`. Logical CSS properties used throughout.
 - **Color Palette:**
   - **Canvas Background:** `#F8FAFC` (Tailwind `slate-50`)
   - **Card / Surface:** `#FFFFFF` (White) with subtle border `#E2E8F0` (`slate-200`)
@@ -50,7 +51,7 @@ Every prompt in this specification automatically inherits and enforces these sha
     - **Warning (Pending Approval, Partially Paid, Overdue):** `#D97706` / `#FEF3C7` (`amber-600` / `amber-100`)
     - **Critical / Danger (Rejected, Absent, Excess Refund, Deadline Passed):** `#DC2626` / `#FEE2E2` (`red-600` / `red-100`)
     - **Neutral / Informational (Draft, Waitlist, Scheduled):** `#2563EB` / `#DBEAFE` (`blue-600` / `blue-100`)
-- **Typography:** `Inter`, `system-ui`, `-apple-system`, `sans-serif`.
+- **Typography:** `IBM Plex Sans Arabic`, `system-ui`, `-apple-system`, `sans-serif`.
   - H1 / Page Header: `24px` (`text-2xl`), bold (`font-bold`), tracking-tight
   - H2 / Section / Modal Header: `18px` (`text-lg`), semibold (`font-semibold`)
   - Body Text: `14px` (`text-sm`), regular (`font-normal`), leading-5
@@ -141,16 +142,17 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: Auth Layout (Centered standalone container, no app header, no sidebar).
+- Language: Arabic, RTL
 - Logo: Full logo, centered above the card.
 - Container: Clean, elevated modal-style card (max-w-md w-full mx-auto p-8 bg-white rounded-2xl shadow-xl border border-slate-200).
 - Backdrop: Subtle textured neutral canvas (bg-slate-50 min-h-screen flex flex-col justify-center items-center px-4).
 - Structure:
-  1. Header: Platform Name "VELORA", Subtitle "Training Center Management Portal".
-  2. Tenant Badge: Dynamic Center selector/indicator "Beacon Training Center (Ramallah Branch)".
-  3. Form Card: Email field, Password field (with visibility toggle), Remember Me checkbox, Forgot Password link.
-  4. Primary CTA: "Sign In to Workspace" button (solid Indigo, full width).
+  1. Header: Platform Name "VELORA (فيلورا)", Subtitle "بوابة إدارة مراكز التدريب".
+  2. Tenant Badge: مؤشر اختيار المركز "مركز بيكون للتدريب (فرع رام الله)".
+  3. Form Card: حقل البريد الإلكتروني، حقل كلمة المرور (مع زر إظهار/إخفاء)، خيار تذكرني على هذا الجهاز، رابط "نسيت كلمة المرور؟".
+  4. Primary CTA: زر "تسجيل الدخول إلى مساحة العمل" (أزرق نيلي، بعرض كامل).
   5. Feedback Area: Inline alert container for validation errors, inactive account warnings, or rate-limiting countdowns.
-  6. Footer: Security watermark "Protected by Role-Based Access Control & 256-Bit Tenant Encryption".
+  6. Footer: علامة أمان "محمي بنظام الصلاحيات المستند إلى الأدوار وتشفير 256-بت للمراكز".
 
 # DOMAIN DATA & MOCK ENTITIES:
 - Email Placeholder: "name@beacontraining.com"
@@ -164,21 +166,21 @@ The screens are sorted according to the operational user journey:
 
 # DESIGN SYSTEM COMPONENTS:
 - CardContainer (bg-white, rounded-2xl, border-slate-200, shadow-xl)
-- InputField (Label: "Work Email", type: "email", icon: "Mail", required)
-- InputField (Label: "Password", type: "password", icon: "Lock", rightAction: "EyeToggle", required)
-- Checkbox (Label: "Keep me signed in on this device")
+- InputField (Label: "البريد الإلكتروني للعمل", type: "email", icon: "Mail", required, placeholder: "name@beacontraining.com")
+- InputField (Label: "كلمة المرور", type: "password", icon: "Lock", rightAction: "EyeToggle", required, placeholder: "••••••••••••")
+- Checkbox (Label: "تذكرني على هذا الجهاز")
 - Button (Primary, Indigo-600, w-full, h-12, text-sm font-semibold, rounded-lg, shadow-sm)
 - InlineAlert (Semantic Danger: Red-50 background, Red-700 text, Red-200 border, AlertTriangle icon)
 
 # CALLS TO ACTION (CTAs):
-- Primary CTA: "Sign In" (Submits login form, triggers credential validation, starts session).
-- Secondary CTA: "Forgot your password?" (Opens support contact modal: "Please contact your Center Manager to reset your account password").
+- Primary CTA: "تسجيل الدخول" (إرسال النموذج، التحقق من الحساب، وبدء الجلسة).
+- Secondary CTA: "نسيت كلمة المرور؟" (يفتح نافذة الدعم: "يرجى التواصل مع إدارة المركز لإعادة تعيين كلمة المرور").
 
 # FORM VALIDATION & BUSINESS RULES:
 - Email Validation: Required, RFC-5322 regex format. Cannot be empty.
 - Password Validation: Required, minimum 8 characters.
 - Tenant & Account Status Verification:
-  - If user account is marked "Inactive" or "Suspended" -> Reject with error: "Your account has been deactivated. Please contact your center administrator."
+  - If user account is marked "Inactive" or "Suspended" -> Reject with error: "تم إلغاء تفعيل حسابك. يرجى التواصل مع إدارة المركز."
   - Rate Limiting: 5 consecutive failed attempts lock the login form for 60 seconds with countdown badge.
 
 # NAVIGATION & ROUTING RULES:
@@ -190,10 +192,10 @@ The screens are sorted according to the operational user journey:
 
 # COMPREHENSIVE STATES:
 - Default State: Empty form inputs with cursor auto-focused on Email field.
-- Loading State: "Sign In" button disabled, displays spinner icon + label "Verifying Credentials...", inputs read-only.
-- Error State (Invalid Credentials): Red outline on email/password inputs, top inline alert: "Invalid email or password. Please verify and try again."
-- Error State (Rate Limited): Form disabled with amber countdown banner: "Too many login attempts. Please wait 45 seconds before retrying."
-- Success State: Button turns green with checkmark "Signed In! Loading Workspace...", smooth fade-out into dashboard.
+- Loading State: "Sign In" button disabled, displays spinner icon + label "جارٍ التحقق من البيانات...", الحقول للقراءة فقط.
+- Error State (Invalid Credentials): Red outline on email/password inputs, top inline alert: "البريد الإلكتروني أو كلمة المرور غير صحيحة. يرجى التحقق والمحاولة مجدداً."
+- Error State (Rate Limited): Form disabled with amber countdown banner: "محاولات دخول خاطئة متكررة. يرجى الانتظار 45 ثانية قبل إعادة المحاولة."
+- Success State: Button turns green with checkmark "تم تسجيل الدخول بنجاح! جارٍ تحميل مساحة العمل...", انتقال سلس للوحة التحكم.
 
 # RESPONSIVE BEHAVIOR:
 - Mobile (<640px): Card spans full width (px-4), padding adjusts to 24px, logo scales down to 32px height, touch targets >=48px.
@@ -225,16 +227,17 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: Standard App Shell (Fixed Top Header + Shared Left Sidebar filtered for MANAGER).
+- Language: Arabic, RTL
 - Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
-- Top Bar: Center Badge "Beacon Training Center", Dashboard link (active), Notifications (3 unread), User Avatar "Ahmad Qasim (Manager)".
-- Sidebar: Dashboard (active), Courses, Instructors, Students, Enrollments, Payments, Instructor Dues, Reports, Staff & Users, Audit Log.
+- Top Bar: Center Badge "مركز بيكون للتدريب", رابط لوحة التحكم (نشط), الإشعارات (3 غير مقروءة), User Avatar "أحمد قاسم (مدير المركز)".
+- Sidebar: لوحة التحكم (نشط)، الدورات، المدرّبون، المتدربون، التسجيلات، المدفوعات، مستحقات المدرّبين، التقارير، الموظفون والمستخدمون، سجل التدقيق.
 - Main Canvas Structure:
-  1. Page Header: Title "Executive Dashboard", Subtitle "Operational & Financial Overview for Beacon Training Center", Right Actions: "Create Course" (Primary button), "Download Summary" (Secondary outline).
-  2. Financial Health Summary (4-Card Metric Grid): Invoiced Revenue, Collected Revenue, Outstanding Receivables, Accrued Instructor Liabilities.
-  3. Operations KPI Row (3-Card Metric Grid): Active Courses, Total Enrolled Students, Active Instructors.
+  1. Page Header: Title "لوحة التحكم التنفيذية", Subtitle "نظرة عامة تشغيلية ومالية لمركز بيكون للتدريب", Right Actions: "إنشاء دورة" (زر أساسي), "تحميل الملخص" (زر ثانوي).
+  2. Financial Health Summary (4-Card Metric Grid): الإيرادات المفوترة، الإيرادات المحصلة، المستحقات المتبقية، مستحقات المدرّبين المتراكمة.
+  3. Operations KPI Row (3-Card Metric Grid): الدورات النشطة، إجمالي المتدربين المسجلين، المدرّبون النشطون.
   4. Two-Column Working Section:
-     - Left Column (60%): "Urgent Operational Alerts & Actions" (Pending payment approvals, Courses starting this week, Full-capacity waitlists).
-     - Right Column (40%): "Recent Cash Receipts & Payouts" (List of latest 5 transactions with status badges).
+     - Right Column (60% RTL): "التنبيهات والإجراءات التشغيلية العاجلة" (سندات دفع بانتظار الموافقة، دورات تبدأ هذا الأسبوع، قوائم انتظار مكتملة).
+     - Left Column (40% RTL): "أحدث سندات القبض والتسويات" (قائمة بآخر 5 معاملات مع شارات الحالة).
 
 # DOMAIN DATA & MOCK ENTITIES:
 - Center Info: ID: "CTR-001", Name: "Beacon Training Center", Currency: "NIS" (New Israeli Shekels)
@@ -248,22 +251,22 @@ The screens are sorted according to the operational user journey:
   - Enrolled Students: "186 Trainees" (Avg 15.5 per cohort)
   - Active Instructors: "14 Trainers" (9 on Fixed, 3 on Percentage, 2 on PerSession)
 - Operational Alerts:
-  - Alert 1: "5 Offline Payment Vouchers Awaiting Manager Approval (Total: ₪ 4,200)" -> Action: "Review Queue"
-  - Alert 2: "Course 'Full-Stack Web Dev - Cohort 4' reached 100% capacity (20/20) with 4 students on waitlist" -> Action: "View Waitlist"
-  - Alert 3: "Course 'UI/UX Design Spring' starts in 3 days with unassigned lead instructor" -> Action: "Assign Instructor"
+  - Alert 1: "5 سندات قبض نقدية بانتظار موافقة المدير (الإجمالي: ₪ 4,200)" -> Action: "مراجعة القائمة"
+  - Alert 2: "الدورة 'تطوير الويب المتكامل - الدفعة 4' بلغت طاقتها الاستيعابية الكاملة (20/20) مع 4 متدربين في قائمة الانتظار" -> Action: "عرض قائمة الانتظار"
+  - Alert 3: "دورة 'تصميم واجهات المستخدم' تبدأ خلال 3 أيام بدون تعيين مدرّب رئيسي" -> Action: "تعيين مدرّب"
 
 # DESIGN SYSTEM COMPONENTS:
 - MetricCard (Icon, Title, Numerical Value, Trend Indicator, Subtext)
 - AlertBanner (Warning Amber: Icon, Bold Message, Action Link)
 - ActionCard (Elevated border-slate-200, hover:border-indigo-400 transition)
 - StatusBadge (Success: Green, Warning: Amber, Danger: Red, Neutral: Slate)
-- PrimaryButton (Indigo-600, Plus icon, "New Course")
-- SecondaryButton (White, border-slate-300, text-slate-700, "View Reports")
+- PrimaryButton (Indigo-600, Plus icon, "دورة جديدة")
+- SecondaryButton (White, border-slate-300, text-slate-700, "عرض التقارير")
 
 # CALLS TO ACTION (CTAs):
-- Primary CTA: "Create New Course" -> Opens `/manager/courses` with New Course drawer.
-- Alert CTA 1: "Review Payments" -> Routes directly to `/manager/payments` (Approval Queue tab).
-- Alert CTA 2: "View Course Cohort" -> Routes to `/manager/courses/CRS-FSW-004`.
+- Primary CTA: "إنشاء دورة جديدة" -> يفتح `/manager/courses` مع نافذة إنشاء دورة.
+- Alert CTA 1: "مراجعة المدفوعات" -> يوجه إلى `/manager/payments` (تبويب سندات بانتظار الاعتماد).
+- Alert CTA 2: "عرض الدورة التدريبية" -> يوجه إلى `/manager/courses/CRS-FSW-004`.
 - Transaction Row Click -> Opens payment receipt modal with full audit metadata.
 
 # FORM VALIDATION & BUSINESS RULES:
@@ -279,8 +282,8 @@ The screens are sorted according to the operational user journey:
 # COMPREHENSIVE STATES:
 - Default State: Populated metrics, 3 action alerts, recent transaction table.
 - Loading State: Skeleton cards with shimmer pulse animation (`animate-pulse bg-slate-200`) across all metric grids.
-- Empty State (New Center): Metric cards show "₪ 0.00" and "0 Active Courses", alert section shows "Welcome to VELORA! Get started by setting up your staff and creating your first course cohort" with "Create Course" CTA.
-- Error State: Error toast: "Failed to load real-time center metrics. [Retry]"
+- Empty State (New Center): بطاقات المؤشرات تعرض "₪ 0.00" و "0 دورات نشطة"، وقسم التنبيهات يعرض "مرحباً بك في فيلورا! ابدأ بإعداد حسابات الموظفين وإنشاء أول دورة تدريبية لمركزك" مع زر "إنشاء دورة".
+- Error State: Error toast: "تعذر تحميل مؤشرات المركز الحية. [إعادة المحاولة]"
 
 # RESPONSIVE BEHAVIOR:
 - Mobile (<640px): Metrics stack in single column; Alerts collapse into accordion items; tables convert to stacked card lists.
@@ -306,12 +309,13 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Header + Manager Sidebar with "Staff & Users" highlighted).
+- Language: Arabic, RTL
 - Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
-  1. Page Header: Title "Staff & User Accounts", Description "Manage employee logins, center access permissions, and roles", Right Action: "Add Staff Member" button (Primary).
-  2. Search & Filter Bar: Text search (Search by Name, Email, or Phone), Role Filter (All, Manager, Sales, Instructor), Status Filter (All, Active, Suspended).
-  3. Staff Data Table: Full-width responsive table listing all staff in center.
-  4. Slide-Over Drawer / Modal: "Create / Edit Staff Account" form.
+  1. Page Header: Title "حسابات الموظفين والمستخدمين", Description "إدارة حسابات الدخول، صلاحيات المركز، والأدوار الوظيفية", Right Action: زر "إضافة موظف جديد" (أساسي).
+  2. Search & Filter Bar: بحث نصي (البحث بالاسم، البريد الإلكتروني، أو الهاتف)، تصفية الدور (الكل، مدير المركز، المبيعات، المدرّب)، تصفية الحالة (الكل، نشط، معلّق).
+  3. Staff Data Table: جدول متجاوب بعرض كامل يعرض كافة موظفي المركز (الاسم، البريد، الدور، الحالة، آخر دخول، الإجراءات).
+  4. Slide-Over Drawer / Modal: نموذج "إنشاء / تعديل حساب موظف".
 
 # DOMAIN DATA & MOCK ENTITIES:
 - Center Scope: CenterID: "CTR-001"
@@ -325,11 +329,11 @@ The screens are sorted according to the operational user journey:
 - DataTable (Columns: User Name & Avatar, Email, Phone, Role Badge, Status Badge, Last Active, Actions Menu)
 - RoleBadge (Manager: Indigo, Sales: Amber, Instructor: Blue)
 - StatusBadge (Active: Green, Suspended: Red)
-- SlideOverDrawer (Title: "New Staff Member", Width: 480px, Form controls, Sticky bottom action bar)
+- SlideOverDrawer (Title: "إضافة موظف جديد", Width: 480px, عناصر النموذج، شريط الإجراءات السفلي)
 - InputField, SelectDropdown, SwitchToggle (Account Active / Suspended)
 
 # CALLS TO ACTION (CTAs):
-- Primary CTA: "Add Staff Member" (Opens slide-over creation drawer).
+- Primary CTA: "إضافة موظف" (يفتح النافذة الجانبية لإضافة موظف).
 - Row Action 1: "Edit Details" (Opens drawer populated with user's data).
 - Row Action 2: "Suspend / Activate" (Toggles user login status with confirmation modal).
 - Drawer CTA: "Save Account" (Submits form, triggers server validation, updates table).
@@ -348,9 +352,9 @@ The screens are sorted according to the operational user journey:
 # COMPREHENSIVE STATES:
 - Default State: Populated staff table with 4 rows, active search bar, pagination (Showing 1-4 of 4).
 - Loading State: Table rows replaced by 4 skeleton row shimmers.
-- Empty State (No Search Match): "No staff members found matching '[query]'. [Clear Filters]".
-- Error State: Form drawer error message: "Email address already registered to another staff member in this center."
-- Success State: Toast banner: "Staff account for [Name] successfully created. Login credentials dispatched."
+- Empty State (No Search Match): "لم يتم العثور على موظفين مطابقين لـ '[query]'. [مسح التصفية]".
+- Error State: رسالة خطأ في النموذج: "البريد الإلكتروني مسجل بالفعل لموظف آخر في هذا المركز."
+- Success State: إشعار نجاح: "تم إنشاء حساب الموظف [الاسم] بنجاح، وإرسال بيانات الدخول."
 
 # RESPONSIVE BEHAVIOR:
 - Mobile (<640px): Table collapses into individual staff contact cards with quick call/email buttons; drawer takes full screen width.
@@ -376,10 +380,11 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: Standard App Shell (Manager Sidebar, "Instructors" active).
+- Language: Arabic, RTL
 - Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
-  1. Page Header: Title "Instructors & Compensation", Subtitle "Manage academic faculty, course assignments, and compensation agreements", Right Action: "View All Dues" button (links to `/manager/instructor-dues`).
-  2. Summary Metric Row (3 Cards): Total Active Instructors (14), Active Cohort Assignments (16), Total Accrued Compensation (₪ 18,750).
+  1. Page Header: Title "دليل المدرّبين والتعويضات", Subtitle "إدارة الكادر التدريبي، تعيين الدورات، واتفاقيات التعويض المالي", Right Action: زر "عرض كافة المستحقات" (يوجه إلى `/manager/instructor-dues`).
+  2. Summary Metric Row (3 Cards): إجمالي المدرّبين النشطين (14)، الدورات التدريبية المسندة (16)، إجمالي التعويضات المتراكمة (₪ 18,750).
   3. Filter Bar: Search by instructor name, Filter by Compensation Model (`Fixed`, `PercentageOfCollectedRevenue`, `PerSession`), Filter by Assignment Status (`Assigned`, `Unassigned`).
   4. Instructors Grid / Table: List of instructors with assigned courses and financial model badges.
   5. Modal: "Instructor Profile & Assignment Summary" dialog.
@@ -444,11 +449,12 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Manager Sidebar with "Courses" active).
+- Language: Arabic, RTL
 - Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
-  1. Page Header: Title "Courses & Cohorts", Subtitle "Manage curriculum offerings, cohort lifecycles, and instructor assignments", Right Action: "Create New Course" button (Primary).
-  2. Lifecycle Filter Tabs: "All Courses (18)", "Active (12)", "Drafts (3)", "Completed (2)", "Archived (1)".
-  3. Filter & Search Controls: Search by course title or code, Category filter, Instructor filter.
+  1. Page Header: Title "دليل الدورات والبرامج التدريبية", Subtitle "إدارة البرامج التدريبية، دورات الحياة، وتعيينات المدرّبين", Right Action: زر "إنشاء دورة جديدة" (أساسي).
+  2. Lifecycle Filter Tabs: "كافة الدورات (18)"، "نشطة (12)"، "مسودات (3)"، "مكتملة (2)"، "مؤرشفة (1)".
+  3. Filter & Search Controls: البحث باسم الدورة أو رمزها، تصفية التصنيف، تصفية المدرّب.
   4. Courses Grid / Table: Responsive course cards or table view (with view switcher toggle: Grid / Table).
   5. Pagination Controls: "Showing 1-12 of 18 courses", Previous / Next page buttons.
 
@@ -510,8 +516,9 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Manager Sidebar).
+- Language: Arabic, RTL
 - Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
-- Breadcrumbs: "Courses > Full-Stack Web Development Bootcamp (FSW-2026-C4)"
+- Breadcrumbs: "الدورات > معسكر تطوير الويب المتكامل (FSW-2026-C4)"
 - Top Course Banner:
   - Title, Course Code, Status Badge (`Draft` or `Active`), Base Price, Date Range, Capacity pill ("20 / 20 Enrolled").
   - Header Action Bar: "Activate Course" (Primary button, enabled only if >=1 instructor assigned), "Edit Details" (Outline), "Archive" (Danger Outline).
@@ -599,9 +606,10 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Sales-Filtered Sidebar).
+- Language: Arabic, RTL
 - Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
-- Top Bar: Center Badge "Beacon Training Center", Dashboard Link (active), Notifications (2 alerts), User Avatar "Sara Al-Khatib (Sales)".
-- Sidebar Navigation: Dashboard (active), Students, Enrollments, Payments. (Note: Courses, Instructors, Instructor Dues, Staff, and Audit Log are strictly hidden per RBAC).
+- Top Bar: Center Badge "مركز بيكون للتدريب", رابط لوحة التحكم (نشط), الإشعارات (2 تنبيه), User Avatar "سارة الخطيب (مسؤولة مبيعات)".
+- Sidebar: لوحة التحكم (نشط)، المتدربون، التسجيلات، المدفوعات. (ملاحظة: الدورات، المدرّبون، مستحقات المدرّبين، الموظفون، وسجل التدقيق مخفية تماماً بحسب الصلاحيات).
 - Main Canvas:
   1. Welcome Banner: Greeting "Good morning, Sara", Subtitle "Sales Follow-up & Intake Command Center", Quick Action Bar (3 Buttons: "+ New Student Profile", "Enroll Student", "Record Payment").
   2. Intake Metric Cards (4 Cards): Today's Inquiries (8), Pending Payment Approvals (5 Vouchers / ₪ 4,200), Unpaid Active Enrollments (14 Trainees), Courses Nearing Full Capacity (3 Cohorts).
@@ -669,6 +677,7 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Sales Sidebar with "Students" active).
+- Language: Arabic, RTL
 - Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
   1. Page Header: Title "Student Directory & Intake", Subtitle "Search center student records or register new trainees", Right Action: "+ Register New Student" button (Primary Indigo).
@@ -736,6 +745,7 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Sales Sidebar with "Enrollments" active).
+- Language: Arabic, RTL
 - Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
   1. Page Header: Title "Enrollments & Course Allocations", Subtitle "Enroll students into active cohorts or manage waitlists", Right Action: "+ New Enrollment" button (Primary).
@@ -813,13 +823,14 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Sales Sidebar with "Payments" active).
+- Language: Arabic, RTL
 - Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
-  1. Page Header: Title "Student Payment Vouchers", Subtitle "Record offline tuition payments and track voucher approval status", Right Action: "+ Record New Payment" button (Primary Indigo).
-  2. Summary Metric Cards (3 Cards): Vouchers Submitted Today (4), Total Pending Manager Approval (₪ 4,200), Total Approved This Week (₪ 18,500).
-  3. Filter Bar: Filter by Payment Method, Filter by Status (`Pending Approval`, `Completed`, `Rejected`), Search by Student Name or Receipt #.
+  1. Page Header: Title "سندات دفع المتدربين", Subtitle "تسجيل سندات القبض اليدوية ومتابعة حالة اعتمادها من المدير", Right Action: زر "+ تسجيل دفعة جديدة" (أساسي).
+  2. Summary Metric Cards (3 Cards): سندات مقدمة اليوم (4)، بانتظار موافقة المدير (₪ 4,200)، سندات معتمدة هذا الأسبوع (₪ 18,500).
+  3. Filter Bar: تصفية طريقة الدفع، تصفية الحالة (بانتظار الموافقة، معتمد، مرفوض)، البحث باسم المتدرب أو رقم السند.
   4. Payments Table: Receipt #, Date, Student Name, Course, Amount Paid, Method, Status Badge, Manager Notes, Receipt Slip.
-  5. Centered Modal Window: "Record Offline Payment Voucher".
+  5. Centered Modal Window: نافذة "تسجيل سند قبض يدوي".
 
 # DOMAIN DATA & MOCK ENTITIES:
 - Center Context: CenterID: "CTR-001", Currency: "NIS" (₪)
@@ -899,6 +910,7 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Manager Sidebar with "Students" active).
+- Language: Arabic, RTL
 - Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
   1. Page Header: Title "Students Directory", Subtitle "Master center registry, enrollment histories, and financial standing", Right Actions: "Export Student Roster" (Outline), "Add Student" (Primary).
@@ -962,6 +974,7 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Manager Sidebar with "Enrollments" active).
+- Language: Arabic, RTL
 - Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
   1. Page Header: Title "Enrollment & Capacity Management", Subtitle "Monitor cohort capacities, waitlists, and approve discount allocations", Right Actions: "Enroll Student" (Primary).
@@ -1028,6 +1041,7 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Manager Sidebar with "Payments" active).
+- Language: Arabic, RTL
 - Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
   1. Page Header: Title "Financial Approvals & Cash Receipts", Subtitle "Inspect and approve offline payment vouchers and manage student excess refunds", Right Actions: "Payment Ledger Summary" (Outline).
@@ -1106,6 +1120,7 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Manager Sidebar with "Instructor Dues" active).
+- Language: Arabic, RTL
 - Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
   1. Page Header: Title "Instructor Dues & Settlements", Subtitle "Track compensation accruals, verify liability calculations, and settle payouts", Right Actions: "+ Record Settlement Payout" (Primary).
@@ -1181,15 +1196,16 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Manager Sidebar with "Reports" active).
+- Language: Arabic, RTL
 - Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
-  1. Page Header: Title "Operational & Financial Reports", Subtitle "Executive summary reports and center performance indicators", Right Actions: "Print / Save as PDF" (Secondary Outline).
-  2. Date Range Filter: Preset buttons ("This Month", "Last 30 Days", "Current Quarter", "Year to Date").
+  1. Page Header: Title "التقارير التشغيلية والمالية للمركز", Subtitle "ملخصات تنفيذية وتقارير قياس الأداء لمركز التدريب", Right Actions: "طباعة / تصدير PDF" (زر ثانوي).
+  2. Date Range Filter: أزرار النطاق الزمني ("هذا الشهر"، "آخر 30 يوماً"، "الربع الحالي"، "منذ بداية العام").
   3. Report Category Cards (4 Core Summary Sections):
-     - Section 1: Course Enrollment & Capacity Utilization Report
-     - Section 2: Fee Collection & Cash Inflow Velocity Report
-     - Section 3: Receivables Aging & Delinquency Report
-     - Section 4: Instructor Compensation & Cost Distribution Report
+     - Section 1: تقرير استيعاب المقاعد ونسب إشغال الدورات
+     - Section 2: تقرير تحصيل الرسوم وسرعة التدفقات النقدية
+     - Section 3: تقرير أعمار الديون والمتأخرات المالية
+     - Section 4: تقرير نفقات تعويضات ومستحقات المدرّبين
   4. Tabular Summary Previews for each report section.
 
 # DOMAIN DATA & MOCK ENTITIES:
@@ -1263,6 +1279,7 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Manager Sidebar with "Audit Log" active).
+- Language: Arabic, RTL
 - Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
   1. Page Header: Title "System Audit Trail", Subtitle "Immutable historical log of all operational, financial, and administrative actions", Right Badge: "Compliance Mode: Append-Only".
@@ -1335,8 +1352,9 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Instructor-Filtered Sidebar).
+- Language: Arabic, RTL
 - Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
-- Top Bar: Center Badge "Beacon Training Center", Dashboard Link (active), Notifications (4 items), User Avatar "Eng. Omar Farooq (Instructor)".
+- Top Bar: Center Badge "مركز بيكون للتدريب", رابط لوحة التحكم (نشط), الإشعارات (4 تنبيهات), User Avatar "م. عمر فاروق (المدرّب)".
 - Sidebar Navigation: Dashboard (active), My Courses, Sessions & Attendance, Materials, Tasks & Submissions, Feedback, My Earnings. (Manager, Sales, and Staff links are strictly hidden).
 - Main Canvas:
   1. Welcome Banner: Greeting "Welcome back, Eng. Omar", Subtitle "Academic Teaching & Evaluation Cockpit", Quick Action Bar: "Schedule Lecture", "Create Task", "Take Attendance".
@@ -1407,6 +1425,7 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Instructor Sidebar with "My Courses" active).
+- Language: Arabic, RTL
 - Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
   1. Page Header: Title "My Assigned Courses", Subtitle "Manage curriculum, sessions, materials, and student submissions for your cohorts", Right Indicator: "2 Active Cohorts".
@@ -1466,8 +1485,9 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Instructor Sidebar).
+- Language: Arabic, RTL
 - Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
-- Breadcrumbs: "My Courses > Full-Stack Web Development Bootcamp (FSW-2026-C4)"
+- Breadcrumbs: "دوراتي التدريبية > معسكر تطوير الويب المتكامل (FSW-2026-C4)"
 - Top Course Banner:
   - Course Title, Code, Schedule, Enrolled Count (20), Progress (Session 8 of 24).
   - Quick Action Buttons: "+ Schedule Session", "+ Upload Material", "+ Create Task".
@@ -1543,6 +1563,7 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Instructor Sidebar with "Sessions & Attendance" active).
+- Language: Arabic, RTL
 - Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
   1. Page Header: Title "Session Attendance Roster", Subtitle "Record and update lecture attendance for assigned cohorts", Right Action: "Save Attendance" (Primary Green button).
@@ -1618,6 +1639,7 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Instructor Sidebar with "Materials" active).
+- Language: Arabic, RTL
 - Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
   1. Page Header: Title "Course Materials Library", Subtitle "Publish and organize learning resources for enrolled trainees", Right Action: "+ Upload New Material" button (Primary Indigo).
@@ -1686,6 +1708,7 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Instructor Sidebar with "Tasks & Submissions" active).
+- Language: Arabic, RTL
 - Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
   1. Page Header: Title "Tasks & Submissions Review", Subtitle "Issue homework assignments and evaluate trainee submissions", Right Action: "+ Create New Task" button (Primary Indigo).
@@ -1764,6 +1787,7 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Instructor Sidebar with "Feedback" active).
+- Language: Arabic, RTL
 - Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
   1. Page Header: Title "1:1 Student Feedback Desk", Subtitle "Provide confidential evaluations, recommendations, and mentorship notes", Right Indicator: "Confidentiality: 1:1 Private".
@@ -1833,6 +1857,7 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Instructor Sidebar with "My Earnings" active).
+- Language: Arabic, RTL
 - Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
   1. Page Header: Title "My Earnings & Compensation", Subtitle "Track accrued compensation, contract terms, and received payouts", Right Indicator: "Currency: NIS (₪)".
@@ -1908,8 +1933,9 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Student-Filtered Sidebar).
+- Language: Arabic, RTL
 - Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
-- Top Bar: Center Badge "Beacon Training Center", Dashboard Link (active), Notifications (2 new), User Avatar "Tariq Yousef Al-Sayed (Student)".
+- Top Bar: Center Badge "مركز بيكون للتدريب", رابط لوحة التحكم (نشط), الإشعارات (2 جديد), User Avatar "طارق يوسف السيد (المتدرب)".
 - Sidebar Navigation: Dashboard (active), My Courses, Materials, Tasks, Attendance, Feedback, Payments & Balance. (All administrative and teaching tools are hidden).
 - Main Canvas:
   1. Welcome Banner: Greeting "Welcome back, Tariq!", Subtitle "Your active learning journey and academic schedule", Next Lecture Pill ("Next: Today @ 18:00 in Lab 3").
@@ -1982,6 +2008,7 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Student Sidebar with "My Courses" active).
+- Language: Arabic, RTL
 - Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
   1. Page Header: Title "My Enrolled Courses", Subtitle "Access curriculum, materials, assignments, and attendance for your cohorts", Right Indicator: "1 Active Enrollment".
@@ -2040,8 +2067,9 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Student Sidebar).
+- Language: Arabic, RTL
 - Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
-- Breadcrumbs: "My Courses > Full-Stack Web Development Bootcamp (FSW-2026-C4)"
+- Breadcrumbs: "دوراتي المسجلة > معسكر تطوير الويب المتكامل (FSW-2026-C4)"
 - Top Course Banner:
   - Course Title, Code, Lead Instructor "Eng. Omar Farooq", Schedule "Mon/Wed/Sat 18:00 - 21:00", Room "Lab 3".
   - Quick Progress Indicator: "Session 8 of 24 | Attendance: 92%".
@@ -2117,6 +2145,7 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Student Sidebar with "Materials" active).
+- Language: Arabic, RTL
 - Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
   1. Page Header: Title "Course Materials & Resources", Subtitle "Download lecture presentations, reference guides, and source code", Right Indicator: "6 Available Files".
@@ -2185,6 +2214,7 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Student Sidebar with "Tasks" active).
+- Language: Arabic, RTL
 - Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
   1. Page Header: Title "My Tasks & Assignments", Subtitle "Submit homework, track deadlines, and review instructor evaluations", Right Filter: Course selector.
@@ -2261,6 +2291,7 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Student Sidebar with "Attendance" active).
+- Language: Arabic, RTL
 - Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
   1. Page Header: Title "My Attendance Record", Subtitle "Verify your lecture attendance history and compliance percentage", Right Indicator: "Course: Full-Stack Web Dev".
@@ -2332,11 +2363,12 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Student Sidebar with "Feedback" active).
+- Language: Arabic, RTL
 - Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
-  1. Page Header: Title "Instructor Feedback & Mentorship", Subtitle "Confidential 1:1 evaluations and recommendations from your instructors", Right Badge: "Privacy: Visible Only to You".
+  1. Page Header: Title "توجيهات وتقييمات المدرّبين (1:1)", Subtitle "ملاحظات توجيهية وتوصيات أكاديمية خاصة مقدمة من مدرّبيك", Right Badge: "خصوصية تامة: لا يراها أحد غيرك".
   2. Cohort Filter: Course dropdown ("Full-Stack Web Dev - Cohort 4").
-  3. Privacy Guarantee Banner: Blue-50 container explaining that this feedback is strictly confidential and never shared with other students or sales staff.
+  3. Privacy Guarantee Banner: تنبيه يوضح أن هذه التقييمات سرية وفردية تماماً ولا يطلع عليها أي متدرب آخر أو موظفو المبيعات.
   4. Chronological Feedback Feed: Stream of feedback cards, each featuring the instructor's avatar, date, category tag, constructive feedback text, and verified signature.
 
 # DOMAIN DATA & MOCK ENTITIES:
@@ -2391,18 +2423,19 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Student Sidebar with "Payments & Balance" active).
+- Language: Arabic, RTL
 - Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
-  1. Page Header: Title "Tuition Ledger & Receipts", Subtitle "Verify your course fees, payment receipts, and outstanding tuition balance", Right Badge: "Currency: NIS (₪)".
+  1. Page Header: Title "كشف الرسوم الدراسية وسندات القبض", Subtitle "التحقق من رسوم الدورات، سندات الدفع المسددة، والرصيد المتبقي", Right Badge: "العملة: شيكل (₪)".
   2. Financial Ledger Card (Comprehensive Summary Banner):
      - Base Catalog Tuition: "₪ 3,200.00"
      - Applied Discount: "- ₪ 0.00"
      - Net Final Payable: "₪ 3,200.00"
      - Verified Payments Paid: "₪ 2,000.00"
      - Remaining Balance Due: "₪ 1,200.00" (Bold Amber)
-     - Overall Payment Status Badge: `Partially Paid`
-  3. Offline Payment Instructions Notice: Informational card explaining how to make installment payments at the center front-desk or via bank deposit.
-  4. Historical Approved Receipts Table: Receipt #, Payment Date, Amount Paid, Payment Method, Reference / Slip #, Manager Approval Status, Action ("Download Receipt Voucher").
+     - Overall Payment Status Badge: `مدفوع جزئياً`
+  3. Offline Payment Instructions Notice: بطاقة معلومات توضح آلية تسديد الأقساط نقداً في مكتب استقبال المركز أو عبر الإيداع البنكي.
+  4. Historical Approved Receipts Table: جدول سندات القبض المعتمدة (رقم السند، تاريخ الدفع، المبلغ المسدد، طريقة الدفع، رقم الحوالة، حالة اعتماد المدير، زر "تحميل سند القبض").
 
 # DOMAIN DATA & MOCK ENTITIES:
 - Student Scope: `CurrentUser.ID == USR-STU-001` (Tariq Yousef Al-Sayed)
@@ -2418,9 +2451,9 @@ The screens are sorted according to the operational user journey:
   - Receipt 1: Receipt#: "REC-2026-042" | Date: "2026-10-15" | Amount: "₪ 1,000.00" | Method: "Cash" | Status: "Completed (Approved by Manager)" | Slip: "CSH-1015-01"
   - Receipt 2: Receipt#: "REC-2026-018" | Date: "2026-10-01" | Amount: "₪ 1,000.00" | Method: "POS Card Terminal" | Status: "Completed (Approved by Manager)" | Slip: "POS-9921-TX"
 - Center Offline Payment Deposit Instructions:
-  - Cash / POS: "Visit Center Front-Desk (Sun-Thu, 09:00 - 18:00)"
+  - Cash / POS: "مراجعة مكتب استقبال المركز (الأحد - الخميس، 09:00 - 18:00)"
   - Bank Deposit: "Bank of Palestine | Account: 1234567 | IBAN: PS00PALS00000000001234567"
-  - Note: "Always request an official stamped receipt from center sales upon payment."
+  - Note: "احرص دائماً على طلب سند قبض رسمي ومختوم من موظف المبيعات عند تسديد أي دفعة."
 
 # DESIGN SYSTEM COMPONENTS:
 - LedgerSummaryCard (Multi-stat banner: Base Price, Discount, Total Payable, Total Paid, Remaining Due)
@@ -2473,10 +2506,11 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header with active bell icon + Shared Role-Filtered Sidebar).
+- Language: Arabic, RTL
 - Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
-  1. Page Header: Title "Notification Center", Subtitle "Stay updated on tasks, session schedules, payment approvals, and center alerts", Right Actions: "Mark All as Read" (Secondary Outline).
-  2. Filter Tabs: "All Notifications (12)", "Unread Only (4)", "Academic Alerts", "Financial & Payments".
+  1. Page Header: Title "مركز التنبيهات والإشعارات", Subtitle "متابعة تنبيهات المهام، مواعيد المحاضرات، اعتماد الدفعات، وإشعارات المركز", Right Actions: "تحديد الكل كمقروء" (زر ثانوي).
+  2. Filter Tabs: "كافة الإشعارات (12)"، "غير المقروءة فقط (4)"، "تنبيهات أكاديمية"، "المالية والمدفوعات".
   3. Notifications Stream: Clean chronological list of notification items with semantic category icons, timestamp, bold message, unread blue dot indicator, and action link.
 
 # DOMAIN DATA & MOCK ENTITIES:
@@ -2543,14 +2577,15 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Role-Filtered Sidebar with User Menu trigger).
+- Language: Arabic, RTL
 - Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
-  1. Page Header: Title "My Profile & Account", Subtitle "Manage your personal contact information and login credentials", Right Indicator: Role Badge (`MANAGER` / `SALES` / `INSTRUCTOR` / `STUDENT`).
+  1. Page Header: Title "الملف الشخصي والحساب", Subtitle "إدارة بيانات الاتصال الشخصية وكلمة المرور الخاصة بحسابك", Right Indicator: شارة الدور (مدير المركز / المبيعات / المدرّب / المتدرب).
   2. Profile Overview Card: User Avatar, Full Name, Work Email (read-only), Assigned Center ("Beacon Training Center"), System Role.
   3. Two-Section Form Layout:
      - Section 1: "Personal Information" (Full Name, Phone Number, Bio / Notes).
      - Section 2: "Security & Password" (Current Password, New Password, Confirm New Password).
-  4. Bottom Action Bar: "Save Profile Changes" (Primary Indigo), "Discard Changes" (Ghost).
+  4. Bottom Action Bar: "حفظ التغييرات" (أزرق نيلي أساسي)، "إلغاء التعديلات" (زر ثانوي).
 
 # DOMAIN DATA & MOCK ENTITIES:
 - Sample Profile Context (Manager):
@@ -2617,14 +2652,15 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Role-Filtered Sidebar).
+- Language: Arabic, RTL
 - Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
-  1. Page Header: Title "Account Settings", Subtitle "Customize your application experience and notification preferences", Right Action: "Save Preferences" (Primary Indigo).
+  1. Page Header: Title "إعدادات الحساب وتفضيلات العرض", Subtitle "تخصيص تجربة الاستخدام وإعدادات وصول الإشعارات وتفضيلات النظام", Right Action: "حفظ التفضيلات" (زر أساسي).
   2. Settings Sections (3 Cards):
      - Section 1: "Interface & Appearance" (Theme selection: Clean Light Enterprise default; Language: English LTR default).
      - Section 2: "Notification Preferences" (Toggle operational email alerts, toggle task deadline reminders, toggle payment status digests).
      - Section 3: "Regional & Localization" (Currency indicator: NIS ₪; Timezone: Jerusalem/Gaza UTC+2; Date Format: DD/MM/YYYY).
-  3. Sticky Save Footer: "Save Settings" button.
+  3. Sticky Save Footer: زر "حفظ الإعدادات".
 
 # DOMAIN DATA & MOCK ENTITIES:
 - Preferences Defaults:
