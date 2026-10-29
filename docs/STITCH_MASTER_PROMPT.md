@@ -18,6 +18,15 @@ Status: Approved for MVP Implementation
 
 Goal: Consolidate course management, student tracking, attendance, tasks, offline payments, and instructor compensation into a single, role-scoped platform to replace spreadsheets and fragmented communication.
 
+## Logo Usage
+- Always use the attached VELORA logo image. Never redraw, recreate, recolor, stretch, or add effects to it.
+- Logo versions:
+  - Full logo (icon + "VELORA" wordmark): on light backgrounds.
+  - Full logo, dark version (white wordmark): on dark backgrounds (#14243A or #253244).
+  - Icon only (navy rounded square with a white and gold "V"): collapsed sidebar, mobile top bar, favicon, small spaces.
+- Clear space around the logo = height of the "V" letter.
+- Brand colors: Primary #14243A, Secondary #C5A46D, Tertiary #2E7D5B, Neutral #253244. Font: Inter.
+
 # SOURCE OF TRUTH
 You MUST strictly follow these documents for this task:
 - docs/PRD.md (Product Requirements, MVP Scope, Roles, Features, Constraints)

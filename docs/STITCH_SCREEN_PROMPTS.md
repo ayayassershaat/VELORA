@@ -141,10 +141,11 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: Auth Layout (Centered standalone container, no app header, no sidebar).
+- Logo: Full logo, centered above the card.
 - Container: Clean, elevated modal-style card (max-w-md w-full mx-auto p-8 bg-white rounded-2xl shadow-xl border border-slate-200).
 - Backdrop: Subtle textured neutral canvas (bg-slate-50 min-h-screen flex flex-col justify-center items-center px-4).
 - Structure:
-  1. Header: VELORA Brand Logo (indigo geometric mark), Platform Name "VELORA", Subtitle "Training Center Management Portal".
+  1. Header: Platform Name "VELORA", Subtitle "Training Center Management Portal".
   2. Tenant Badge: Dynamic Center selector/indicator "Beacon Training Center (Ramallah Branch)".
   3. Form Card: Email field, Password field (with visibility toggle), Remember Me checkbox, Forgot Password link.
   4. Primary CTA: "Sign In to Workspace" button (solid Indigo, full width).
@@ -224,7 +225,8 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: Standard App Shell (Fixed Top Header + Shared Left Sidebar filtered for MANAGER).
-- Top Bar: Logo, Center Badge "Beacon Training Center", Dashboard link (active), Notifications (3 unread), User Avatar "Ahmad Qasim (Manager)".
+- Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
+- Top Bar: Center Badge "Beacon Training Center", Dashboard link (active), Notifications (3 unread), User Avatar "Ahmad Qasim (Manager)".
 - Sidebar: Dashboard (active), Courses, Instructors, Students, Enrollments, Payments, Instructor Dues, Reports, Staff & Users, Audit Log.
 - Main Canvas Structure:
   1. Page Header: Title "Executive Dashboard", Subtitle "Operational & Financial Overview for Beacon Training Center", Right Actions: "Create Course" (Primary button), "Download Summary" (Secondary outline).
@@ -304,6 +306,7 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Header + Manager Sidebar with "Staff & Users" highlighted).
+- Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
   1. Page Header: Title "Staff & User Accounts", Description "Manage employee logins, center access permissions, and roles", Right Action: "Add Staff Member" button (Primary).
   2. Search & Filter Bar: Text search (Search by Name, Email, or Phone), Role Filter (All, Manager, Sales, Instructor), Status Filter (All, Active, Suspended).
@@ -373,6 +376,7 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: Standard App Shell (Manager Sidebar, "Instructors" active).
+- Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
   1. Page Header: Title "Instructors & Compensation", Subtitle "Manage academic faculty, course assignments, and compensation agreements", Right Action: "View All Dues" button (links to `/manager/instructor-dues`).
   2. Summary Metric Row (3 Cards): Total Active Instructors (14), Active Cohort Assignments (16), Total Accrued Compensation (₪ 18,750).
@@ -440,6 +444,7 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Manager Sidebar with "Courses" active).
+- Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
   1. Page Header: Title "Courses & Cohorts", Subtitle "Manage curriculum offerings, cohort lifecycles, and instructor assignments", Right Action: "Create New Course" button (Primary).
   2. Lifecycle Filter Tabs: "All Courses (18)", "Active (12)", "Drafts (3)", "Completed (2)", "Archived (1)".
@@ -505,6 +510,7 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Manager Sidebar).
+- Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Breadcrumbs: "Courses > Full-Stack Web Development Bootcamp (FSW-2026-C4)"
 - Top Course Banner:
   - Title, Course Code, Status Badge (`Draft` or `Active`), Base Price, Date Range, Capacity pill ("20 / 20 Enrolled").
@@ -593,7 +599,8 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Sales-Filtered Sidebar).
-- Top Bar: VELORA Logo, Center Badge "Beacon Training Center", Dashboard Link (active), Notifications (2 alerts), User Avatar "Sara Al-Khatib (Sales)".
+- Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
+- Top Bar: Center Badge "Beacon Training Center", Dashboard Link (active), Notifications (2 alerts), User Avatar "Sara Al-Khatib (Sales)".
 - Sidebar Navigation: Dashboard (active), Students, Enrollments, Payments. (Note: Courses, Instructors, Instructor Dues, Staff, and Audit Log are strictly hidden per RBAC).
 - Main Canvas:
   1. Welcome Banner: Greeting "Good morning, Sara", Subtitle "Sales Follow-up & Intake Command Center", Quick Action Bar (3 Buttons: "+ New Student Profile", "Enroll Student", "Record Payment").
@@ -662,6 +669,7 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Sales Sidebar with "Students" active).
+- Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
   1. Page Header: Title "Student Directory & Intake", Subtitle "Search center student records or register new trainees", Right Action: "+ Register New Student" button (Primary Indigo).
   2. Search & Fast Filter Bar: Large Search Input (with magnifying glass icon and instant debounced lookup: "Search by student name, mobile phone, or email..."), Active Course Filter dropdown.
@@ -728,6 +736,7 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Sales Sidebar with "Enrollments" active).
+- Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
   1. Page Header: Title "Enrollments & Course Allocations", Subtitle "Enroll students into active cohorts or manage waitlists", Right Action: "+ New Enrollment" button (Primary).
   2. Tab Bar: "Active Enrollments (186)", "Course Waitlists (14 Trainees)".
@@ -804,6 +813,7 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Sales Sidebar with "Payments" active).
+- Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
   1. Page Header: Title "Student Payment Vouchers", Subtitle "Record offline tuition payments and track voucher approval status", Right Action: "+ Record New Payment" button (Primary Indigo).
   2. Summary Metric Cards (3 Cards): Vouchers Submitted Today (4), Total Pending Manager Approval (₪ 4,200), Total Approved This Week (₪ 18,500).
@@ -889,6 +899,7 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Manager Sidebar with "Students" active).
+- Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
   1. Page Header: Title "Students Directory", Subtitle "Master center registry, enrollment histories, and financial standing", Right Actions: "Export Student Roster" (Outline), "Add Student" (Primary).
   2. Metric Summary Bar (4 Cards): Total Registered Trainees (240), Actively Enrolled (186), Trainees with Overdue Balance (28), Total Center Receivables (₪ 46,300).
@@ -951,6 +962,7 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Manager Sidebar with "Enrollments" active).
+- Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
   1. Page Header: Title "Enrollment & Capacity Management", Subtitle "Monitor cohort capacities, waitlists, and approve discount allocations", Right Actions: "Enroll Student" (Primary).
   2. Tab Group: "Active Enrollments (186)", "Waitlist Queues (14)", "Cancelled / Withdrawn (3)".
@@ -1016,6 +1028,7 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Manager Sidebar with "Payments" active).
+- Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
   1. Page Header: Title "Financial Approvals & Cash Receipts", Subtitle "Inspect and approve offline payment vouchers and manage student excess refunds", Right Actions: "Payment Ledger Summary" (Outline).
   2. Tabbed Working Desk (3 Tabs):
@@ -1093,6 +1106,7 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Manager Sidebar with "Instructor Dues" active).
+- Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
   1. Page Header: Title "Instructor Dues & Settlements", Subtitle "Track compensation accruals, verify liability calculations, and settle payouts", Right Actions: "+ Record Settlement Payout" (Primary).
   2. Center Liabilities Summary (4 Metric Cards): Total Accrued Liabilities (₪ 18,750), Settled / Paid to Date (₪ 9,550), Outstanding Balance Due (₪ 9,200), Instructors Awaiting Settlement (6).
@@ -1167,6 +1181,7 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Manager Sidebar with "Reports" active).
+- Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
   1. Page Header: Title "Operational & Financial Reports", Subtitle "Executive summary reports and center performance indicators", Right Actions: "Print / Save as PDF" (Secondary Outline).
   2. Date Range Filter: Preset buttons ("This Month", "Last 30 Days", "Current Quarter", "Year to Date").
@@ -1248,6 +1263,7 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Manager Sidebar with "Audit Log" active).
+- Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
   1. Page Header: Title "System Audit Trail", Subtitle "Immutable historical log of all operational, financial, and administrative actions", Right Badge: "Compliance Mode: Append-Only".
   2. Filter & Query Toolbar: Date Range Picker, Action Type filter dropdown, Staff Member filter dropdown, Entity Search input (search by Student ID, Course Code, or Receipt #).
@@ -1319,7 +1335,8 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Instructor-Filtered Sidebar).
-- Top Bar: VELORA Logo, Center Badge "Beacon Training Center", Dashboard Link (active), Notifications (4 items), User Avatar "Eng. Omar Farooq (Instructor)".
+- Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
+- Top Bar: Center Badge "Beacon Training Center", Dashboard Link (active), Notifications (4 items), User Avatar "Eng. Omar Farooq (Instructor)".
 - Sidebar Navigation: Dashboard (active), My Courses, Sessions & Attendance, Materials, Tasks & Submissions, Feedback, My Earnings. (Manager, Sales, and Staff links are strictly hidden).
 - Main Canvas:
   1. Welcome Banner: Greeting "Welcome back, Eng. Omar", Subtitle "Academic Teaching & Evaluation Cockpit", Quick Action Bar: "Schedule Lecture", "Create Task", "Take Attendance".
@@ -1390,6 +1407,7 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Instructor Sidebar with "My Courses" active).
+- Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
   1. Page Header: Title "My Assigned Courses", Subtitle "Manage curriculum, sessions, materials, and student submissions for your cohorts", Right Indicator: "2 Active Cohorts".
   2. Filter & View Tabs: "Active Courses (2)", "Completed Cohorts (3)", "All Courses (5)".
@@ -1448,6 +1466,7 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Instructor Sidebar).
+- Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Breadcrumbs: "My Courses > Full-Stack Web Development Bootcamp (FSW-2026-C4)"
 - Top Course Banner:
   - Course Title, Code, Schedule, Enrolled Count (20), Progress (Session 8 of 24).
@@ -1524,6 +1543,7 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Instructor Sidebar with "Sessions & Attendance" active).
+- Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
   1. Page Header: Title "Session Attendance Roster", Subtitle "Record and update lecture attendance for assigned cohorts", Right Action: "Save Attendance" (Primary Green button).
   2. Session Selector Toolbar: Course dropdown ("Full-Stack Web Dev - Cohort 4"), Session Selector dropdown ("Session 8: REST APIs & Express - Oct 24, 2026"), Quick Toggle: "Mark All Present" button.
@@ -1598,6 +1618,7 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Instructor Sidebar with "Materials" active).
+- Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
   1. Page Header: Title "Course Materials Library", Subtitle "Publish and organize learning resources for enrolled trainees", Right Action: "+ Upload New Material" button (Primary Indigo).
   2. Cohort Selector & Folder Tabs: Course dropdown ("Full-Stack Web Dev - Cohort 4"), Session Folders ("All Materials", "Module 1: JS/TS", "Module 2: Node.js", "Module 3: React").
@@ -1665,6 +1686,7 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Instructor Sidebar with "Tasks & Submissions" active).
+- Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
   1. Page Header: Title "Tasks & Submissions Review", Subtitle "Issue homework assignments and evaluate trainee submissions", Right Action: "+ Create New Task" button (Primary Indigo).
   2. Active Task Selector Tabs: Horizontal pills showing active tasks in this cohort ("Task 1: Git Workflow", "Task 2: Build RESTful API [Active - 9 Pending]", "Task 3: Database Schema").
@@ -1742,6 +1764,7 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Instructor Sidebar with "Feedback" active).
+- Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
   1. Page Header: Title "1:1 Student Feedback Desk", Subtitle "Provide confidential evaluations, recommendations, and mentorship notes", Right Indicator: "Confidentiality: 1:1 Private".
   2. Cohort & Student Selector Bar: Course dropdown ("Full-Stack Web Dev - Cohort 4"), Student dropdown with search ("Tariq Yousef Al-Sayed").
@@ -1810,6 +1833,7 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Instructor Sidebar with "My Earnings" active).
+- Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
   1. Page Header: Title "My Earnings & Compensation", Subtitle "Track accrued compensation, contract terms, and received payouts", Right Indicator: "Currency: NIS (₪)".
   2. Personal Financial Summary Cards (3 Cards): Total Accrued Compensation (₪ 6,750), Total Settled & Received (₪ 4,500), Outstanding Balance Payable (₪ 2,250).
@@ -1884,7 +1908,8 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Student-Filtered Sidebar).
-- Top Bar: VELORA Logo, Center Badge "Beacon Training Center", Dashboard Link (active), Notifications (2 new), User Avatar "Tariq Yousef Al-Sayed (Student)".
+- Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
+- Top Bar: Center Badge "Beacon Training Center", Dashboard Link (active), Notifications (2 new), User Avatar "Tariq Yousef Al-Sayed (Student)".
 - Sidebar Navigation: Dashboard (active), My Courses, Materials, Tasks, Attendance, Feedback, Payments & Balance. (All administrative and teaching tools are hidden).
 - Main Canvas:
   1. Welcome Banner: Greeting "Welcome back, Tariq!", Subtitle "Your active learning journey and academic schedule", Next Lecture Pill ("Next: Today @ 18:00 in Lab 3").
@@ -1957,6 +1982,7 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Student Sidebar with "My Courses" active).
+- Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
   1. Page Header: Title "My Enrolled Courses", Subtitle "Access curriculum, materials, assignments, and attendance for your cohorts", Right Indicator: "1 Active Enrollment".
   2. Tab Bar: "Active Courses (1)", "Completed Courses (0)".
@@ -2014,6 +2040,7 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Student Sidebar).
+- Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Breadcrumbs: "My Courses > Full-Stack Web Development Bootcamp (FSW-2026-C4)"
 - Top Course Banner:
   - Course Title, Code, Lead Instructor "Eng. Omar Farooq", Schedule "Mon/Wed/Sat 18:00 - 21:00", Room "Lab 3".
@@ -2090,6 +2117,7 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Student Sidebar with "Materials" active).
+- Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
   1. Page Header: Title "Course Materials & Resources", Subtitle "Download lecture presentations, reference guides, and source code", Right Indicator: "6 Available Files".
   2. Cohort Selector / Filter: Course dropdown ("Full-Stack Web Dev - Cohort 4"), Search by file name input.
@@ -2157,6 +2185,7 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Student Sidebar with "Tasks" active).
+- Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
   1. Page Header: Title "My Tasks & Assignments", Subtitle "Submit homework, track deadlines, and review instructor evaluations", Right Filter: Course selector.
   2. Task Status Filter Tabs: "All Tasks (3)", "Pending Submission (1)", "Under Review (1)", "Evaluated (1)".
@@ -2232,6 +2261,7 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Student Sidebar with "Attendance" active).
+- Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
   1. Page Header: Title "My Attendance Record", Subtitle "Verify your lecture attendance history and compliance percentage", Right Indicator: "Course: Full-Stack Web Dev".
   2. Attendance Performance Summary (3 Metric Cards): Overall Attendance Rate (92%), Total Sessions Held (8 Sessions), Attended Sessions (7 Present / 1 Absent).
@@ -2302,6 +2332,7 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Student Sidebar with "Feedback" active).
+- Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
   1. Page Header: Title "Instructor Feedback & Mentorship", Subtitle "Confidential 1:1 evaluations and recommendations from your instructors", Right Badge: "Privacy: Visible Only to You".
   2. Cohort Filter: Course dropdown ("Full-Stack Web Dev - Cohort 4").
@@ -2360,6 +2391,7 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Student Sidebar with "Payments & Balance" active).
+- Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
   1. Page Header: Title "Tuition Ledger & Receipts", Subtitle "Verify your course fees, payment receipts, and outstanding tuition balance", Right Badge: "Currency: NIS (₪)".
   2. Financial Ledger Card (Comprehensive Summary Banner):
@@ -2441,6 +2473,7 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header with active bell icon + Shared Role-Filtered Sidebar).
+- Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
   1. Page Header: Title "Notification Center", Subtitle "Stay updated on tasks, session schedules, payment approvals, and center alerts", Right Actions: "Mark All as Read" (Secondary Outline).
   2. Filter Tabs: "All Notifications (12)", "Unread Only (4)", "Academic Alerts", "Financial & Payments".
@@ -2510,6 +2543,7 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Role-Filtered Sidebar with User Menu trigger).
+- Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
   1. Page Header: Title "My Profile & Account", Subtitle "Manage your personal contact information and login credentials", Right Indicator: Role Badge (`MANAGER` / `SALES` / `INSTRUCTOR` / `STUDENT`).
   2. Profile Overview Card: User Avatar, Full Name, Work Email (read-only), Assigned Center ("Beacon Training Center"), System Role.
@@ -2583,6 +2617,7 @@ The screens are sorted according to the operational user journey:
 
 # VISUAL & LAYOUT HIERARCHY:
 - Layout: App Shell (Shared Top Header + Role-Filtered Sidebar).
+- Logo: Full logo in the sidebar header when expanded, icon only when collapsed.
 - Main Canvas:
   1. Page Header: Title "Account Settings", Subtitle "Customize your application experience and notification preferences", Right Action: "Save Preferences" (Primary Indigo).
   2. Settings Sections (3 Cards):
