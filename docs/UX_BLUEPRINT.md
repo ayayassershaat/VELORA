@@ -487,3 +487,5 @@ VELORA Routing Architecture (35 MVP Screens)
 
 ---
 **خلاصة المعمارية:** يُعد هذا المخطط المرجع الإلزامي الذي يوجه بناء وتوثيق جرد كافة الشاشات الـ 35 بالتفصيل الدقيق في وثيقة [SCREEN_INVENTORY.md](SCREEN_INVENTORY.md).
+
+
